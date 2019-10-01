@@ -91,15 +91,16 @@ comm.bio[1:10,1:60]
 dim(comm.bio)
 
 ind<-which(comm.bio$lomehi=="lo")
-  
+
 hmscYlo<-comm.bio[ind,55:24565]  #start at 54 if you want lomehi column
 rownames(hmscYlo)<-comm.bio$X.SampleID[ind]
 hmscYlo[1:10,1:10]
 
-hmscXlo<-data.frame(snowdepth=comm.bio$snowdepth,TC=comm.bio$TC,pH=comm.bio$pH,moisture=comm.bio$moisture)[ind,] #,lomehi=comm.bio$lomehi,plantcov=comm.bio$plantcov,whc=comm.bio$WHC
+#variables from ordination: TC,TN,NH4,NO3,pH,WHC,moisture,snowdepth,elevation,MicC,MicN,Plant_Dens,Plant_Div,plantcover,
+hmscXlo<-data.frame(snowdepth=comm.bio$snowdepth,TC=comm.bio$TC,pH=comm.bio$pH,moisture=comm.bio$moisture,TN=comm.bio$TN,NH4=comm.bio$NH4,NO3=comm.bio$NO3,WHC=comm.bio$WHC,elevation=comm.bio$elevation,snow2015=comm.bio$snow2015,cvsnow=comm.bio$cvsnow)[ind,] #,lomehi=comm.bio$lomehi
 hmiscDISTlo<-data.frame(X=comm.bio$X,Y=comm.bio$Y,elevation=comm.bio$elevation)[ind,]
-rownames(hmiscDISTlo)<-comm.bio$X.SampleID[ind]
 rownames(hmscXlo)<-comm.bio$X.SampleID[ind]
+rownames(hmiscDISTlo)<-comm.bio$X.SampleID[ind]
 
 
 rcorr(as.matrix(hmscXlo))
@@ -153,14 +154,13 @@ ind<-which(comm.bio$lomehi=="me")
 hmscYme<-comm.bio[ind,55:24565]  #start at 54 if you want lomehi column
 rownames(hmscYme)<-comm.bio$X.SampleID[ind]
 hmscYme[1:10,1:10]
+
+hmscXme<-data.frame(snowdepth=comm.bio$snowdepth,TC=comm.bio$TC,pH=comm.bio$pH,moisture=comm.bio$moisture,TN=comm.bio$TN,NH4=comm.bio$NH4,NO3=comm.bio$NO3,WHC=comm.bio$WHC,elevation=comm.bio$elevation,snow2015=comm.bio$snow2015,cvsnow=comm.bio$cvsnow)[ind,] #,lomehi=comm.bio$lomehi,plantcov=comm.bio$plantcov,whc=comm.bio$WHC
 hmiscDISTme<-data.frame(X=comm.bio$X,Y=comm.bio$Y,elevation=comm.bio$elevation)[ind,]
+rownames(hmscXme)<-comm.bio$X.SampleID[ind]
 rownames(hmiscDISTme)<-comm.bio$X.SampleID[ind]
 
-
-hmscXme<-data.frame(snowdepth=comm.bio$snowdepth,TC=comm.bio$TC,pH=comm.bio$pH,moisture=comm.bio$moisture)[ind,] #,lomehi=comm.bio$lomehi,plantcov=comm.bio$plantcov,whc=comm.bio$WHC
-rownames(hmscXme)<-comm.bio$X.SampleID[ind]
-
-rcorr(as.matrix(hmscXme[,2:(dim(hmscXme)[2]-1)]))
+rcorr(as.matrix(hmscXme[,1:(dim(hmscXme)[2])]))
 
 #take out species that are zeros
 ind<-which(colSums(hmscYme)>0);length(ind)
@@ -203,12 +203,12 @@ hmscYhi<-comm.bio[ind,55:24565]  #start at 54 if you want lomehi column
 rownames(hmscYhi)<-comm.bio$X.SampleID[ind]
 hmscYhi[1:10,1:10]
 
-hmscXhi<-data.frame(snowdepth=comm.bio$snowdepth,TC=comm.bio$TC,pH=comm.bio$pH,moisture=comm.bio$moisture)[ind,] #,lomehi=comm.bio$lomehi,plantcov=comm.bio$plantcov,whc=comm.bio$WHC
+hmscXhi<-data.frame(snowdepth=comm.bio$snowdepth,TC=comm.bio$TC,pH=comm.bio$pH,moisture=comm.bio$moisture,TN=comm.bio$TN,NH4=comm.bio$NH4,NO3=comm.bio$NO3,WHC=comm.bio$WHC,elevation=comm.bio$elevation,snow2015=comm.bio$snow2015,cvsnow=comm.bio$cvsnow)[ind,] #,lomehi=comm.bio$lomehi,plantcov=comm.bio$plantcov,whc=comm.bio$WHC
 hmiscDISThi<-data.frame(X=comm.bio$X,Y=comm.bio$Y,elevation=comm.bio$elevation)[ind,]
 rownames(hmscXhi)<-comm.bio$X.SampleID[ind]
 rownames(hmiscDISThi)<-comm.bio$X.SampleID[ind]
 
-rcorr(as.matrix(hmscXhi[,2:(dim(hmscXhi)[2]-1)]))
+rcorr(as.matrix(hmscXhi[,1:(dim(hmscXhi)[2])]))
 
 #take out species that are zeros
 ind<-which(colSums(hmscYhi)>0);length(ind)
@@ -284,12 +284,12 @@ hmscXme
 hmscXhi
 
 #The y data are not normal (I have lots of options for distributions: normal, binary, poisson, overdispersed poisson (neg bin), log normal, gamma). however, the gloor paper and some other papers on clr seem to just plug clr values into ordinations etc without any additional transformations so I will not transform them here (yet)
-hist(hmscYlo2sub[,320],breaks=20)
-hist(hmscYlo4[,320],breaks=20)
-hist(log(hmscYlo4[,320]+1),breaks=20)
-qqnorm(log(hmscYlo4[,117]+1))
-qqnorm(hmscYlo4[,117])
-plot(hmscYlo2sub[,117],hmscYlo4[,117])
+#hist(hmscYlo2sub[,320],breaks=20)
+#hist(hmscYlo4[,320],breaks=20)
+#hist(log(hmscYlo4[,320]+1),breaks=20)
+#qqnorm(log(hmscYlo4[,117]+1))
+#qqnorm(hmscYlo4[,117])
+#plot(hmscYlo2sub[,117],hmscYlo4[,117])
 
 #check if the values are too low that some tolerance is messing up the CI estimates, yes important to scale y, but it is already fairly scaled here. I will scale x, since they differ so much in range
 hmscXlo2<-scale(hmscXlo)
@@ -333,6 +333,7 @@ hmscXhi3<-as.matrix(hmscXhi2)
 hmiscDISTlom<-as.matrix(dist(hmiscDISTlo))
 hmiscDISTmem<-as.matrix(dist(hmiscDISTme))
 hmiscDISThim<-as.matrix(dist(hmiscDISThi))
+#it seems that the spherical model of autocorrelation does not have a nugget b/c there is only one parameter associated with the spherical model, summary(spiderfit_lvstruc)$lv.covparams
 
 
 #Using shorter chains, start 3:34, end 3:37 for model, 3:37-3:39 for residual corr matrix
@@ -357,9 +358,9 @@ rescor.hi11auto <- get.residual.cor(mod.hi11auto)
 mod.lo11flv3<- boral(y = hmscYlo5, X = hmscXlo3, lv.control = list(num.lv = 3), family = c(rep("normal",305),rep("negative.binomial",1)), save.model = TRUE, calc.ics = T, mcmc.control = list(n.burnin = 10000, n.iteration = 40000, n.thin = 30, seed = 123))#
 rescor.lo11flv3 <- get.residual.cor(mod.lo11flv3) 
 
-mod.lo11flv3auto<- boral(y = hmscYlo5, X = hmscXlo3, lv.control = list(num.lv = 3,type="powered.exponential",distmat=hmiscDISTlom), family = c(rep("normal",305),rep("negative.binomial",1)), save.model = TRUE, calc.ics = T, mcmc.control = list(n.burnin = 10000, n.iteration = 40000, n.thin = 30, seed = 123))#
+mod.lo11flv3auto<- boral(y = hmscYlo5, X = hmscXlo3, lv.control = list(num.lv = 3,type="spherical",distmat=hmiscDISTlom), family = c(rep("normal",305),rep("negative.binomial",1)), save.model = TRUE, calc.ics = T, mcmc.control = list(n.burnin = 10000, n.iteration = 40000, n.thin = 30, seed = 123))#
 rescor.lo11flv3auto <- get.residual.cor(mod.lo11flv3auto) 
-
+summary(mod.lo11flv3auto)$lv.covparams
 
 mod.me11flv3<- boral(y = hmscYme5, X = hmscXme3, lv.control = list(num.lv = 3), family = c(rep("normal",298),rep("negative.binomial",3)), save.model = TRUE, calc.ics = T, mcmc.control = list(n.burnin = 10000, n.iteration = 40000, n.thin = 30, seed = 123))#
 rescor.me11flv3 <- get.residual.cor(mod.me11flv3) 
@@ -455,18 +456,6 @@ fit.hilv4occ9exp4f$X.coefs.mean  #-1.710607072, yes checks
 
 
 
-##### Percent covariation explained by env #####
-
-#One approach to quantify how much of the species co-occurrence is explained by covariates (that is, how well the predictor variables describe the species assemblage) is through differences in the trace of the estimated residual covariance matrix induced by the latent variables (Warton et al. 2015). From the above code, this can be obtained as rescors$trace. For the spider data set, when we compared a pure latent variable model (similar to the equation 1 but without site effects) to the correlated response model, the trace decreased from 178.92 to 107.92. This implies that environmental covariates accounted for approximately 40% of the covariation between species.
-#The trace is interpreted as the amount of covariation explained by the latent variables. it is a random variable so will be different from run to run based on mcmc
-(178.92-107.92)/178.92
-
-#Need to fit a model with only latent variables
-rescor.hi9fixed0$trace #expected to be higher than the model below (but it's not)
-rescor.hi9$trace
-(rescor.hi9$trace-rescor.hi9fixed0$trace)/rescor.hi9$trace*100
-#this didn't work, not sure why
-
 
 #### Percent variation explained by environment ####
 #I don't know how useful this is (b/c it is not R2 just partitioning the explained variation) - the results suggest that the vast majority of the variance is explained by the latent variables compared to the environment.  
@@ -523,6 +512,142 @@ mean(temp)
 hist(temp)
 
 
+##### Doing forward selection to select fixed variables #####
+#Using autocorrelation
+
+#Round 1
+temphi<-data.frame(snowdepth=rep(NA,273), TC=rep(NA,273), pH=rep(NA,273), moisture=rep(NA,273), TN=rep(NA,273), NH4=rep(NA,273), NO3=rep(NA,273), WHC=rep(NA,273), elevation=rep(NA,273), snow2015=rep(NA,273), cvsnow=rep(NA,273))
+for (i in 1:273){
+  yvar<-hmscYhi4[,i]
+  for (j in 1:11){
+    xvar<-hmscXhi2[,colnames(temphi)[j]]
+    mhi<-tryCatch(gls(yvar~xvar,correlation=corSpher(form = ~ X+Y+elevation),data=hmiscDISThi),error=function(e) NA)
+    temphi[i,j]<-tryCatch(nagelkerke(mhi)$Pseudo.R.squared.for.model.vs.null[3], error=function(e) NA)
+}}
+colMeans(temphi,na.rm=T)
+
+tempme<-data.frame(snowdepth=rep(NA,301), TC=rep(NA,301), pH=rep(NA,301), moisture=rep(NA,301), TN=rep(NA,301), NH4=rep(NA,301), NO3=rep(NA,301), WHC=rep(NA,301), elevation=rep(NA,301), snow2015=rep(NA,301), cvsnow=rep(NA,301))
+for (i in 1:301){
+  yvar<-hmscYme4[,i]
+  for (j in 1:11){
+    xvar<-hmscXme2[,colnames(tempme)[j]]
+    mme<-tryCatch(gls(yvar~xvar,correlation=corSpher(form = ~ X+Y+elevation),data=hmiscDISTme),error=function(e) NA)
+    tempme[i,j]<-tryCatch(nagelkerke(mme)$Pseudo.R.squared.for.model.vs.null[3], error=function(e) NA)
+  }}
+colMeans(tempme,na.rm=T)
+
+templo<-data.frame(snowdepth=rep(NA,306), TC=rep(NA,306), pH=rep(NA,306), moisture=rep(NA,306), TN=rep(NA,306), NH4=rep(NA,306), NO3=rep(NA,306), WHC=rep(NA,306), elevation=rep(NA,306), snow2015=rep(NA,306), cvsnow=rep(NA,306))
+for (i in 1:306){
+  yvar<-hmscYlo4[,i]
+  for (j in 1:11){
+    xvar<-hmscXlo2[,colnames(templo)[j]]
+    mlo<-tryCatch(gls(yvar~xvar,correlation=corSpher(form = ~ X+Y+elevation),data=hmiscDISTlo),error=function(e) NA)
+    templo[i,j]<-tryCatch(nagelkerke(mlo)$Pseudo.R.squared.for.model.vs.null[3], error=function(e) NA)
+  }}
+colMeans(templo,na.rm=T)
+
+sort(colMeans(rbind(temphi,tempme,templo),na.rm=T))
+
+#Round 2, keep pH
+temphi<-data.frame(snowdepth=rep(NA,273), TC=rep(NA,273), moisture=rep(NA,273), TN=rep(NA,273), NH4=rep(NA,273), NO3=rep(NA,273), WHC=rep(NA,273), elevation=rep(NA,273), snow2015=rep(NA,273), cvsnow=rep(NA,273))
+for (i in 1:273){
+  yvar<-hmscYhi4[,i]
+  for (j in 1:10){
+    xvar<-hmscXhi2[,colnames(temphi)[j]]
+    mhi<-tryCatch(gls(yvar~xvar+hmscXhi2[,"pH"],correlation=corSpher(form = ~ X+Y+elevation),data=hmiscDISThi),error=function(e) NA)
+    temphi[i,j]<-tryCatch(nagelkerke(mhi)$Pseudo.R.squared.for.model.vs.null[3], error=function(e) NA)
+  }}
+colMeans(temphi,na.rm=T)
+
+tempme<-data.frame(snowdepth=rep(NA,301), TC=rep(NA,301), moisture=rep(NA,301), TN=rep(NA,301), NH4=rep(NA,301), NO3=rep(NA,301), WHC=rep(NA,301), elevation=rep(NA,301), snow2015=rep(NA,301), cvsnow=rep(NA,301))
+for (i in 1:301){
+  yvar<-hmscYme4[,i]
+  for (j in 1:10){
+    xvar<-hmscXme2[,colnames(tempme)[j]]
+    mme<-tryCatch(gls(yvar~xvar+hmscXme2[,"pH"],correlation=corSpher(form = ~ X+Y+elevation),data=hmiscDISTme),error=function(e) NA)
+    tempme[i,j]<-tryCatch(nagelkerke(mme)$Pseudo.R.squared.for.model.vs.null[3], error=function(e) NA)
+  }}
+colMeans(tempme,na.rm=T)
+
+templo<-data.frame(snowdepth=rep(NA,306), TC=rep(NA,306), moisture=rep(NA,306), TN=rep(NA,306), NH4=rep(NA,306), NO3=rep(NA,306), WHC=rep(NA,306), elevation=rep(NA,306), snow2015=rep(NA,306), cvsnow=rep(NA,306))
+for (i in 1:306){
+  yvar<-hmscYlo4[,i]
+  for (j in 1:10){
+    xvar<-hmscXlo2[,colnames(templo)[j]]
+    mlo<-tryCatch(gls(yvar~xvar+hmscXlo2[,"pH"],correlation=corSpher(form = ~ X+Y+elevation),data=hmiscDISTlo),error=function(e) NA)
+    templo[i,j]<-tryCatch(nagelkerke(mlo)$Pseudo.R.squared.for.model.vs.null[3], error=function(e) NA)
+  }}
+colMeans(templo,na.rm=T)
+
+sort(colMeans(rbind(temphi,tempme,templo),na.rm=T))
+
+#Round 3, keep moisture
+temphi<-data.frame(snowdepth=rep(NA,273), TC=rep(NA,273), TN=rep(NA,273), NH4=rep(NA,273), NO3=rep(NA,273), WHC=rep(NA,273), elevation=rep(NA,273), snow2015=rep(NA,273), cvsnow=rep(NA,273))
+for (i in 1:273){
+  yvar<-hmscYhi4[,i]
+  for (j in 1:9){
+    xvar<-hmscXhi2[,colnames(temphi)[j]]
+    mhi<-tryCatch(gls(yvar~xvar+hmscXhi2[,"pH"]+hmscXhi2[,"moisture"],correlation=corSpher(form = ~ X+Y+elevation),data=hmiscDISThi),error=function(e) NA)
+    temphi[i,j]<-tryCatch(nagelkerke(mhi)$Pseudo.R.squared.for.model.vs.null[3], error=function(e) NA)
+  }}
+colMeans(temphi,na.rm=T)
+
+tempme<-data.frame(snowdepth=rep(NA,301), TC=rep(NA,301), TN=rep(NA,301), NH4=rep(NA,301), NO3=rep(NA,301), WHC=rep(NA,301), elevation=rep(NA,301), snow2015=rep(NA,301), cvsnow=rep(NA,301))
+for (i in 1:301){
+  yvar<-hmscYme4[,i]
+  for (j in 1:9){
+    xvar<-hmscXme2[,colnames(tempme)[j]]
+    mme<-tryCatch(gls(yvar~xvar+hmscXme2[,"pH"]+hmscXme2[,"moisture"],correlation=corSpher(form = ~ X+Y+elevation),data=hmiscDISTme),error=function(e) NA)
+    tempme[i,j]<-tryCatch(nagelkerke(mme)$Pseudo.R.squared.for.model.vs.null[3], error=function(e) NA)
+  }}
+colMeans(tempme,na.rm=T)
+
+templo<-data.frame(snowdepth=rep(NA,306), TC=rep(NA,306), TN=rep(NA,306), NH4=rep(NA,306), NO3=rep(NA,306), WHC=rep(NA,306), elevation=rep(NA,306), snow2015=rep(NA,306), cvsnow=rep(NA,306))
+for (i in 1:306){
+  yvar<-hmscYlo4[,i]
+  for (j in 1:9){
+    xvar<-hmscXlo2[,colnames(templo)[j]]
+    mlo<-tryCatch(gls(yvar~xvar+hmscXlo2[,"pH"]+hmscXlo2[,"moisture"],correlation=corSpher(form = ~ X+Y+elevation),data=hmiscDISTlo),error=function(e) NA)
+    templo[i,j]<-tryCatch(nagelkerke(mlo)$Pseudo.R.squared.for.model.vs.null[3], error=function(e) NA)
+  }}
+colMeans(templo,na.rm=T)
+
+sort(colMeans(rbind(temphi,tempme,templo),na.rm=T))
+
+#Round 4, keep snowdepth
+temphi<-data.frame(TC=rep(NA,273), TN=rep(NA,273), NH4=rep(NA,273), NO3=rep(NA,273), WHC=rep(NA,273), elevation=rep(NA,273), snow2015=rep(NA,273), cvsnow=rep(NA,273))
+for (i in 1:273){
+  yvar<-hmscYhi4[,i]
+  for (j in 1:8){
+    xvar<-hmscXhi2[,colnames(temphi)[j]]
+    mhi<-tryCatch(gls(yvar~xvar+hmscXhi2[,"pH"]+hmscXhi2[,"moisture"]+hmscXhi2[,"snowdepth"],correlation=corSpher(form = ~ X+Y+elevation),data=hmiscDISThi),error=function(e) NA)
+    temphi[i,j]<-tryCatch(nagelkerke(mhi)$Pseudo.R.squared.for.model.vs.null[3], error=function(e) NA)
+  }}
+colMeans(temphi,na.rm=T)
+
+tempme<-data.frame(TC=rep(NA,301), TN=rep(NA,301), NH4=rep(NA,301), NO3=rep(NA,301), WHC=rep(NA,301), elevation=rep(NA,301), snow2015=rep(NA,301), cvsnow=rep(NA,301))
+for (i in 1:301){
+  yvar<-hmscYme4[,i]
+  for (j in 1:8){
+    xvar<-hmscXme2[,colnames(tempme)[j]]
+    mme<-tryCatch(gls(yvar~xvar+hmscXme2[,"pH"]+hmscXme2[,"moisture"]+hmscXme2[,"snowdepth"],correlation=corSpher(form = ~ X+Y+elevation),data=hmiscDISTme),error=function(e) NA)
+    tempme[i,j]<-tryCatch(nagelkerke(mme)$Pseudo.R.squared.for.model.vs.null[3], error=function(e) NA)
+  }}
+colMeans(tempme,na.rm=T)
+
+templo<-data.frame(TC=rep(NA,306), TN=rep(NA,306), NH4=rep(NA,306), NO3=rep(NA,306), WHC=rep(NA,306), elevation=rep(NA,306), snow2015=rep(NA,306), cvsnow=rep(NA,306))
+for (i in 1:306){
+  yvar<-hmscYlo4[,i]
+  for (j in 1:8){
+    xvar<-hmscXlo2[,colnames(templo)[j]]
+    mlo<-tryCatch(gls(yvar~xvar+hmscXlo2[,"pH"]+hmscXlo2[,"moisture"]+hmscXlo2[,"snowdepth"],correlation=corSpher(form = ~ X+Y+elevation),data=hmiscDISTlo),error=function(e) NA)
+    templo[i,j]<-tryCatch(nagelkerke(mlo)$Pseudo.R.squared.for.model.vs.null[3], error=function(e) NA)
+  }}
+colMeans(templo,na.rm=T)
+
+sort(colMeans(rbind(temphi,tempme,templo),na.rm=T))
+
+#keep cvsnow!
 
 
 

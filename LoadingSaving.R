@@ -18,12 +18,14 @@ http://btibert3.github.io/2015/12/08/Environment-Variables-in-Rstudio-on-Mac.htm
 
 
 #enviroments:
-#these are the same enviroments from the last time, nothing has changed
+
+#These are the same enviroments from the last time, nothing has changed
 MovingUphill4_WorkspaceITSBactTrials.Rdata #dada2 trials in R when I was testing truncation and trimming for ITS and bacteria
 MovingUphill4_WorkspaceITSbioinformatics.Rdata
 MovingUphill4_WorkspaceDataCleaning.Rdata
 MovingUphill4_WorkspaceDataCleaningOutput.Rdata #just the 15 output files I need for downstream analysis, all intermediate files deleted from env
-#these environments are where the new analyses start
+
+#These environments are where the new analyses start
 MovingUphill4_WorkspaceAnalysisNetworkTrials.Rdata #all the different trials I ran when deciding the parameters for the networks
 MovingUphill4_WorkspaceSubsetting.Rdata #subsetting hi plots 10 times 273 of the 306 species to make it similar to the number of taxa going in to the network analysis
 MovingUphill4_WorkspaceSimulations.Rdata # simulations based on Faust 2015
@@ -32,9 +34,9 @@ MovingUphill4_WorkspaceAnalysis1.Rdata #reduced network analysis, only final mod
 MovingUphill4_WorkspaceAnalysis2.Rdata #reduced network analysis, only final models
 
 
-save.image("~/Dropbox/EmilyComputerBackup/Documents/Niwot_King/FiguresStats/kingdata/MovingUphill4_WorkspaceAnalysis1.Rdata")  # 
+save.image("~/Dropbox/EmilyComputerBackup/Documents/Niwot_King/FiguresStats/kingdata/MovingUphill5_WorkspaceTrials1.Rdata")  # 
 
-load("~/Dropbox/EmilyComputerBackup/Documents/Niwot_King/FiguresStats/kingdata/MovingUphill4_WorkspaceDataCleaningOutput.Rdata") 
+load("~/Dropbox/EmilyComputerBackup/Documents/Niwot_King/FiguresStats/kingdata/MovingUphill5_WorkspaceTrials1.Rdata") 
 
 
 #rm(list=setdiff(ls(), c("fit.lolv4occ9exp4","rescor.lolv4occ9exp4")))
@@ -123,6 +125,7 @@ library(zCompositions)
 #for boral
 library(boral) #Need version 0.7 or later, available on CRAN.
 library(Matrix)
+library(rcompanion) #for nagelkerke R2 on gls models
 
 #for simulations
 library(dirmult)
@@ -140,4 +143,5 @@ library(vegan)
 
 #library(data.table)
 #library(BiodiversityR) #this requires X11 and takes a while to load, you need to close the window that it opens in rcommander
+
 
