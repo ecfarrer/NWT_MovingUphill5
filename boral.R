@@ -9,7 +9,7 @@
 #Split into lo me hi
 #Remove taxa that are zeros
 #Split into 16S/ITS/18SS/18SN
-#Do the cmultRepl sampling on each 16S/ITS/18SS/18SN dataset which imputes zeros. I went back and forth between first splitting into lo/me/hi vs. doing cmult and clr on whole 16S dataset for example Notes: Originally I was thinking of first splitting each into lo/me/hi (previous notes: not sure if I need to do this, it seems in some ways that I should b/c some taxa are not going to be present not due to incomplete sampling but b/c the environment is not right, but in some ways it probably doesnot matter b/c every sample will be treated the same and b/c a 1 is so similar to a 0 for linear type models). I might be able to do it on the whole datasets b/c I will need the full clr-ed datasets for ordination, so it makes the most sense to do clr on the full datasets. In the end I decided to do it on split lo/me/hi datasets b/c i feel like adding 1's will dilute the dataset and decrease differences between taxa that are actually present (you could be addign 1000 1's to the low dataset for example to acount for all the taxa that are present in me/hi plots but not low)
+#Do the cmultRepl sampling on each 16S/ITS/18SS/18SN dataset which imputes zeros. I went back and forth between first splitting into lo/me/hi vs. doing cmult and clr on whole 16S dataset for example Notes: Originally I was thinking of first splitting each into lo/me/hi (previous notes: not sure if I need to do this, it seems in some ways that I should b/c some taxa are not going to be present not due to incomplete sampling but b/c the environment is not right, but in some ways it probably does not matter b/c every sample will be treated the same and b/c a 1 is so similar to a 0 for linear type models). I might be able to do it on the whole datasets b/c I will need the full clr-ed datasets for ordination, so it makes the most sense to do clr on the full datasets. In the end I decided to do it on split lo/me/hi datasets b/c i feel like adding 1's will dilute the dataset and decrease differences between taxa that are actually present (you could be adding 1000 1's to the low dataset for example to acount for all the taxa that are present in me/hi plots but not low)
 #Calculate clr on each data set 16S/ITS/18SS/18SN
 #Replace back into lo/me/hi datasets
 #Delete infrequent taxa
@@ -305,6 +305,14 @@ hmscXlo3<-as.matrix(hmscXlo2)
 hmscXme3<-as.matrix(hmscXme2)
 hmscXhi3<-as.matrix(hmscXhi2)
 
+#Reduce explanatory variables
+hmscXlo4<-hmscXlo3[,c("pH","snowdepth","moisture","cvsnow")]
+hmscXme4<-hmscXme3[,c("pH","snowdepth","moisture","cvsnow")]
+hmscXhi4<-hmscXhi3[,c("pH","snowdepth","moisture","cvsnow")]
+
+rcorr(as.matrix(hmscXlo4[,1:(dim(hmscXlo4)[2])]))
+rcorr(as.matrix(hmscXme4[,1:(dim(hmscXme4)[2])]))
+rcorr(as.matrix(hmscXhi4[,1:(dim(hmscXhi4)[2])]))
 
 ##### Fit the LVM using boral and calculate residual correlation matrix#####
 
@@ -355,21 +363,24 @@ rescor.hi11auto <- get.residual.cor(mod.hi11auto)
 
 #Using longer chains - final models, start=5pm, end=5:30
 
-mod.lo11flv3<- boral(y = hmscYlo5, X = hmscXlo3, lv.control = list(num.lv = 3), family = c(rep("normal",305),rep("negative.binomial",1)), save.model = TRUE, calc.ics = T, mcmc.control = list(n.burnin = 10000, n.iteration = 40000, n.thin = 30, seed = 123))#
-rescor.lo11flv3 <- get.residual.cor(mod.lo11flv3) 
+# mod.lo11flv3<- boral(y = hmscYlo5, X = hmscXlo4, lv.control = list(num.lv = 3), family = c(rep("normal",305),rep("negative.binomial",1)), save.model = TRUE, calc.ics = T, mcmc.control = list(n.burnin = 10000, n.iteration = 40000, n.thin = 30, seed = 123))#
+# rescor.lo11flv3 <- get.residual.cor(mod.lo11flv3) 
 
-mod.lo11flv3auto<- boral(y = hmscYlo5, X = hmscXlo3, lv.control = list(num.lv = 3,type="spherical",distmat=hmiscDISTlom), family = c(rep("normal",305),rep("negative.binomial",1)), save.model = TRUE, calc.ics = T, mcmc.control = list(n.burnin = 10000, n.iteration = 40000, n.thin = 30, seed = 123))#
+mod.lo11flv3auto<- boral(y = hmscYlo5, X = hmscXlo4, lv.control = list(num.lv = 3,type="spherical",distmat=hmiscDISTlom), family = c(rep("normal",305),rep("negative.binomial",1)), save.model = TRUE, calc.ics = T, mcmc.control = list(n.burnin = 10000, n.iteration = 40000, n.thin = 30, seed = 123))#
 rescor.lo11flv3auto <- get.residual.cor(mod.lo11flv3auto) 
 summary(mod.lo11flv3auto)$lv.covparams
 
-mod.me11flv3<- boral(y = hmscYme5, X = hmscXme3, lv.control = list(num.lv = 3), family = c(rep("normal",298),rep("negative.binomial",3)), save.model = TRUE, calc.ics = T, mcmc.control = list(n.burnin = 10000, n.iteration = 40000, n.thin = 30, seed = 123))#
-rescor.me11flv3 <- get.residual.cor(mod.me11flv3) 
+# mod.me11flv3<- boral(y = hmscYme5, X = hmscXme4, lv.control = list(num.lv = 3), family = c(rep("normal",298),rep("negative.binomial",3)), save.model = TRUE, calc.ics = T, mcmc.control = list(n.burnin = 10000, n.iteration = 40000, n.thin = 30, seed = 123))#
+# rescor.me11flv3 <- get.residual.cor(mod.me11flv3) 
+ 
+mod.me11flv3auto<- boral(y = hmscYme5, X = hmscXme4, lv.control = list(num.lv = 3,type="spherical",distmat=hmiscDISTmem), family = c(rep("normal",298),rep("negative.binomial",3)), save.model = TRUE, calc.ics = T, mcmc.control = list(n.burnin = 10000, n.iteration = 40000, n.thin = 30, seed = 123))#
+rescor.me11flv3auto <- get.residual.cor(mod.me11flv3auto) 
 
-mod.hi11flv3<- boral(y = hmscYhi5, X = hmscXhi3, lv.control = list(num.lv = 3), family = c(rep("normal",265),rep("negative.binomial",8)), save.model = TRUE, calc.ics = T, mcmc.control = list(n.burnin = 10000, n.iteration = 40000, n.thin = 30, seed = 123))#
-rescor.hi11flv3 <- get.residual.cor(mod.hi11flv3) 
+# mod.hi11flv3<- boral(y = hmscYhi5, X = hmscXhi4, lv.control = list(num.lv = 3), family = c(rep("normal",265),rep("negative.binomial",8)), save.model = TRUE, calc.ics = T, mcmc.control = list(n.burnin = 10000, n.iteration = 40000, n.thin = 30, seed = 123))#
+# rescor.hi11flv3 <- get.residual.cor(mod.hi11flv3) 
 
 #start 10:33-10:58 (model), cor 10:58-11:03
-mod.hi11flv3auto<- boral(y = hmscYhi5, X = hmscXhi3, lv.control = list(num.lv = 3,type="powered.exponential",distmat=hmiscDISThim), family = c(rep("normal",265),rep("negative.binomial",8)), save.model = TRUE, calc.ics = T, mcmc.control = list(n.burnin = 10000, n.iteration = 40000, n.thin = 30, seed = 123))#
+mod.hi11flv3auto<- boral(y = hmscYhi5, X = hmscXhi4, lv.control = list(num.lv = 3,type="spherical",distmat=hmiscDISThim), family = c(rep("normal",265),rep("negative.binomial",8)), save.model = TRUE, calc.ics = T, mcmc.control = list(n.burnin = 10000, n.iteration = 40000, n.thin = 30, seed = 123))#
 rescor.hi11flv3auto <- get.residual.cor(mod.hi11flv3auto) 
 
 save.image("~/Dropbox/EmilyComputerBackup/Documents/Niwot_King/FiguresStats/kingdata/MovingUphill5_WorkspaceTrials1.Rdata")  
@@ -400,53 +411,47 @@ plot(2:6,c(mod.mef9lv2$ics[i],
            mod.mef9lv6$ics[i]),type = "b")
 
 dic2<-get.dic(mod.mef9lv2)
-#notes: the more latent variables you add, the fewer significant interactions you have. ex: with 2 latent variables there are 233 taxa with 2440 interactions, and with 4 latent variables there are 214 taxa and 5618 interactions. I think this is because with 4 latent variables you are giving the model more "space" or "dimentions" for the taxa to sort out, so there are fewer significant correlations among taxa. Whe I did this in MovingUphill3, I'm pretty sure the model with 4 latent varialbe had lowest DIC which is why I chose it. Here the model with 2 latent variables has lowest DIC. DIC is suspect though in these models and boral is actually not updating/supporting these functions anymore. I think I will stay with 4 latent variables because I have so many species and I think using only 2 latent variables actually gives spurious significant interactions
+#notes: the more latent variables you add, the fewer significant interactions you have. ex: with 2 latent variables there are 233 taxa with 2440 interactions, and with 4 latent variables there are 214 taxa and 5618 interactions. I think this is because with 4 latent variables you are giving the model more "space" or "dimentions" for the taxa to sort out, so there are fewer significant correlations among taxa. Whe I did this in MovingUphill3, I'm pretty sure the model with 4 latent varialbe had lowest DIC which is why I chose it. Here the model with 2 latent variables has lowest DIC. DIC is suspect though in these models and boral is actually not updating/supporting these functions anymore. I think I will stay with 3 latent variables as a compromise, because I have so many species and I think using only 2 latent variables actually gives spurious significant interactions
 
-
-
-#Use modified function below to get 90% CI
-#res.corshiocc8.90<-get.residual.cor2(fit.lvmhiocc8)
 
 
 
 ##### Look at results and check convergence/fit #####
 
 #Model fit, information criteria
-mod.lo11flv3$ics
-#from when I tested the effect of different numbers of latent variables
 
-summary(mod.lo11flv3) # To look at estimated parameter values
-mod.lo$hpdintervals # 95% credible intervals for model parameters.
+summary(mod.lo11flv3auto) # To look at estimated parameter values
+mod.lo11flv3auto$hpdintervals # 95% credible intervals for model parameters.
 
 #Check convergence
 #Geweke diagnostic - a z test testing whether the first 10% and the last 50% are diffrent (i think those are the fractions, doesn't really matter exactly), if it is significant, then the means are different and it didn't converge
-plot(get.mcmcsamples(mod.lo11flv3)[,1])
-plot(get.mcmcsamples(mod.lo11flv3)[,2])
+plot(get.mcmcsamples(mod.lo11flv3auto)[,1])
+plot(get.mcmcsamples(mod.lo11flv3auto)[,2])
 
-#the order is effect of snowdepth for each of the 600 species, then effect of TC, then pH, then moisture 
-mcmchi<-get.mcmcsamples(mod.lo11flv3)
+#the order is effect of pH for each of the 600 species, then effect of snowdepth, then moisture, then cvsnow, for low, there are 306 taxa, and then 1, 2, 3, 4 x variables: X.coefs[170,1] is the effect of pH in species 170
+mcmchi<-get.mcmcsamples(mod.lo11flv3auto)
 dim(mcmchi)
-colnames(mcmchi)[2500:3000]
+colnames(mcmchi)[100:300]  
 mcmchi[1:10,1:5]
 
 #TRUE means these did not converge
-gew.pvals <- 2*pnorm(abs(unlist(mod.lo11flv3$geweke.diag[[1]])), lower.tail = FALSE)
+gew.pvals <- 2*pnorm(abs(unlist(mod.lo11flv3auto$geweke.diag[[1]])), lower.tail = FALSE)
 length(gew.pvals)
 gew.pvals[1:5]
 gew.pvals[which(gew.pvals<.05)] #technically these did not converge, however, the trace plots look fine to me
 p.adjust(gew.pvals, method = "holm")
 
-mod.lo11flv3$geweke.diag
+mod.lo11flv3auto$geweke.diag
 mod.me11flv3$geweke.diag
 mod.hi11flv3$geweke.diag
-mod.lo11flv3$geweke.diag$prop.exceed
+mod.lo11flv3auto$geweke.diag$prop.exceed
 mod.me11flv3$geweke.diag$prop.exceed
 mod.hi11flv3$geweke.diag$prop.exceed
 
 #example of one that did not converge
 #(1st species) N6f914ead2160e51670d3dc70c25e107b for snowdepth did not converge, but looking at the trace plot, it seems fine
 #geweke diagnostic
-mod.lo11flv3$geweke.diag$geweke.diag$lv.coefs[1:5,]
+mod.lo11flv3auto$geweke.diag$geweke.diag$lv.coefs[1:5,]
 #trace plot (it is the very first parameter)
 plot(get.mcmcsamples(mod.lo11flv3)[,3])
 #mean of the mcmc chain to make sure I'm looking at the right parameter
@@ -473,7 +478,7 @@ hist(varpartme$varpart.X)
 mean(varpartme$varpart.X)
 mean(varpartme$varpart.lv)
 
-varpartlo<-calc.varpart(mod.lo11flv3)#,groupX=c(1,2,3,4,5)
+varpartlo<-calc.varpart(mod.lo11flv3auto)#,groupX=c(1,2,3,4,5)
 varpartlo$varpart.X[1:10]
 varpartlo$varpart.lv[1:10]
 hist(varpartlo$varpart.X)
@@ -484,12 +489,10 @@ mean(varpartlo$varpart.lv)
 
 #The above varpart is the contribution of fixed vs latent variables to explained variation, it is not an R2.
 #I want to also try to fit some simple linear models to see how much environment matters to some of the species.
-hmscXhi2
-hmscYhi4
 
 temp<-vector(length=273)
 for (i in 1:273){
-  mhi<-lm(hmscYhi4[,i]~hmscXhi2)
+  mhi<-lm(hmscYhi4[,i]~hmscXhi2[,"snowdepth"]+hmscXhi2[,"TC"]+hmscXhi2[,"moisture"]+hmscXhi2[,"pH"])
   temp[i]<-summary(mhi)$r.squared#adj.r.squared
 }
 mean(temp)
@@ -497,7 +500,7 @@ hist(temp)
 
 temp<-vector(length=301)
 for (i in 1:301){
-  mhi<-lm(hmscYme4[,i]~hmscXme2)
+  mhi<-lm(hmscYme4[,i]~hmscXme2[,"snowdepth"]+hmscXme2[,"TC"]+hmscXme2[,"moisture"]+hmscXme2[,"pH"])
   temp[i]<-summary(mhi)$r.squared#adj.r.squared
 }
 mean(temp)
@@ -505,7 +508,7 @@ hist(temp)
 
 temp<-vector(length=306)
 for (i in 1:306){
-  mhi<-lm(hmscYlo4[,i]~hmscXlo2)
+  mhi<-lm(hmscYlo4[,i]~hmscXlo2[,"snowdepth"]+hmscXlo2[,"TC"]+hmscXlo2[,"moisture"]+hmscXlo2[,"pH"])
   temp[i]<-summary(mhi)$r.squared#adj.r.squared
 }
 mean(temp)
@@ -651,28 +654,24 @@ sort(colMeans(rbind(temphi,tempme,templo),na.rm=T))
 
 
 
-##### Environmental correlations #####
-envcor.lolv4occ9exp4f<-get.enviro.cor(fit.lolv4occ9exp4f)
-corrplot(envcor.lolv4occ9exp4f$cor[1:100,1:100], type="lower", diag=F, title="Environmental correlations", mar=c(3,0.5,2,1), tl.srt=45,tl.pos="n")
-corrplot(envcor.lolv4occ9exp4f$sig.cor[1:100,1:100], type="lower", diag=F, title="Environmental correlations", mar=c(3,0.5,2,1), tl.srt=45,tl.pos="n")
 
 
 
 
 ##Extract model coefficients
-cbind(fit.lolv4occ10exp4$lv.coefs.mean,fit.lolv4occ10exp4$X.coefs.mean)
-fit.hilv4occ9exp4f$X.coefs.mean
+cbind(mod.lo11flv3auto$lv.coefs.mean,mod.lo11flv3auto$X.coefs.mean)
+mod.lo11flv3auto$X.coefs.mean
 
 ##Dunn-Smyth residual plots to check model assumption, outliers etc. The first plot should not have a funnel
-plot(mod.lo11flv3)
+plot(mod.lo11flv3auto)
 plot(mod.me11flv3)
 plot(mod.hi11flv3)
 plot(mod.hi9pois)
 plot(mod.hi9)
 
-lof.resid<-ds.residuals(mod.lo11flv3)
+lof.resid<-ds.residuals(mod.lo11flv3auto)
 str(lof.resid)
-hist(lof.resid$residuals[,100])
+hist(lof.resid$residuals[,10])
 
 mef.resid<-ds.residuals(mod.me11flv3)
 str(mef.resid)
@@ -682,15 +681,14 @@ hif.resid<-ds.residuals(mod.hi11flv3)
 dim(hif.resid$residuals)
 hist(hif.resid$residuals[,10])
 
-## Residual ordination plot of the sites (please see Figure 2b in the main text for relevant explanation)
-## Please note that boral currently does not automatically produce biplots, although species loadings can be obtained from fit.lvm$lv.coefs.median[,2:3]
-lvsplot(mod.mef9lv4)
+
+
 
 
 
 ##### Extract number of significant correlations #####
 
-(length(which(rescor.lo11flv3$sig.correlaton!=0))-dim(rescor.lo11flv3$sig.correlaton)[1])/2
+(length(which(rescor.lo11flv3auto$sig.correlaton!=0))-dim(rescor.lo11flv3auto$sig.correlaton)[1])/2
 (length(which(rescor.me11flv3$sig.correlaton!=0))-dim(rescor.me11flv3$sig.correlaton)[1])/2
 (length(which(rescor.hi11flv3$sig.correlaton!=0))-dim(rescor.hi11flv3$sig.correlaton)[1])/2
 
@@ -698,7 +696,7 @@ lvsplot(mod.mef9lv4)
 
 ###### Use corrplot package to plot residual correlations between species #####
 
-corrplot(rescor.lo$sig.correlaton[1:100,1:100], diag=F, type="lower", title="Residual correlations", mar=c(3,0.5,2,1), tl.srt = 45,method = "color")#
+corrplot(rescor.lo11flv3auto$sig.correlaton[1:100,1:100], diag=F, type="lower", title="Residual correlations", mar=c(3,0.5,2,1), tl.srt = 45,method = "color")#
 corrplot(rescor.hi$sig.correlaton[1:100,1:100], type="lower", diag=F, title="Residual correlations", mar=c(3,0.5,2,1), tl.srt=45,method = "color")
 corrplot(rescor.melv5occ9exp4$sig.correlaton[1:100,1:100], type="lower", diag=F, title="Residual correlations", mar=c(3,0.5,2,1), tl.srt=45,method = "color")
 
@@ -810,9 +808,9 @@ dim(temp2)
 
 ##### Network diagrams for me #####
 #creating sparse matrix
-colMatme<-rescor.me11flv3$sig.correlaton
-colMatme[which(rescor.me11flv3$sig.correlaton>0)]<-1
-colMatme[which(rescor.me11flv3$sig.correlaton<0)]<- -1
+colMatme<-rescor.me11flv3auto$sig.correlaton
+colMatme[which(rescor.me11flv3auto$sig.correlaton>0)]<-1
+colMatme[which(rescor.me11flv3auto$sig.correlaton<0)]<- -1
 
 # colMatme<-rescor.melv4occ9exp4f$sig.correlaton
 # colMatme[which(colMatme>.6)]<-1
