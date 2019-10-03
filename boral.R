@@ -859,9 +859,9 @@ colorgraphme[which(colorgraphme$otu=="Bdc4a7fab972ac91dd37631d279420a08"),]
 
 ##### Network diagrams for hi #####
 #creating sparse matrix
-colMathi<-mod.hi11flv3auto$sig.correlaton#rescor.hi11flv3
-colMathi[which(mod.hi11flv3auto$sig.correlaton>0)]<-1
-colMathi[which(mod.hi11flv3auto$sig.correlaton<0)]<- -1
+colMathi<-rescor.hi11flv3auto$sig.correlaton#rescor.hi11flv3
+colMathi[which(rescor.hi11flv3auto$sig.correlaton>0)]<-1
+colMathi[which(rescor.hi11flv3auto$sig.correlaton<0)]<- -1
 
 # colMathi<-rescor.hi9$correlation
 # colMathi[which(colMathi>.5)]<-1

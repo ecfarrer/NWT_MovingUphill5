@@ -26,6 +26,7 @@ MovingUphill4_WorkspaceDataCleaning.Rdata
 MovingUphill4_WorkspaceDataCleaningOutput.Rdata #just the 15 output files I need for downstream analysis, all intermediate files deleted from env
 
 #These environments are where the new analyses start
+MovingUphill5_SubsettingPCArange.Rdata #subsetting low and hi at the same range of pca axis 1
 MovingUphill4_WorkspaceAnalysisNetworkTrials.Rdata #all the different trials I ran when deciding the parameters for the networks
 MovingUphill4_WorkspaceSubsetting.Rdata #subsetting hi plots 10 times 273 of the 306 species to make it similar to the number of taxa going in to the network analysis
 MovingUphill4_WorkspaceSimulations.Rdata # simulations based on Faust 2015
@@ -35,6 +36,7 @@ MovingUphill4_WorkspaceAnalysis2.Rdata #reduced network analysis, only final mod
 
 
 save.image("~/Dropbox/EmilyComputerBackup/Documents/Niwot_King/FiguresStats/kingdata/MovingUphill5_WorkspaceTrials1.Rdata")  # 
+save.image("~/Dropbox/EmilyComputerBackup/Documents/Niwot_King/FiguresStats/kingdata/MovingUphill5_SubsettingPCArange.Rdata")  # 
 
 load("~/Dropbox/EmilyComputerBackup/Documents/Niwot_King/FiguresStats/kingdata/MovingUphill5_WorkspaceTrials1.Rdata") 
 
