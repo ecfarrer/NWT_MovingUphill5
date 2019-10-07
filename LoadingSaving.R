@@ -31,11 +31,11 @@ MovingUphill4_WorkspaceAnalysisNetworkTrials.Rdata #all the different trials I r
 MovingUphill4_WorkspaceSubsetting.Rdata #subsetting hi plots 10 times 273 of the 306 species to make it similar to the number of taxa going in to the network analysis
 MovingUphill4_WorkspaceSimulations.Rdata # simulations based on Faust 2015
 MovingUphill4_WorkspaceRandomizations.Rdata #randomizing my data to detect false positives
-MovingUphill4_WorkspaceAnalysis1.Rdata #reduced network analysis, only final models, alternate back and forth
-MovingUphill4_WorkspaceAnalysis2.Rdata #reduced network analysis, only final models
+MovingUphill4_WorkspaceTrials1.Rdata #reduced network analysis, only final models, alternate back and forth
+MovingUphill4_WorkspaceTrials2.Rdata #reduced network analysis, only final models
 
 
-save.image("~/Dropbox/EmilyComputerBackup/Documents/Niwot_King/FiguresStats/kingdata/MovingUphill5_WorkspaceTrials1.Rdata")  # 
+save.image("~/Dropbox/EmilyComputerBackup/Documents/Niwot_King/FiguresStats/kingdata/MovingUphill5_WorkspaceTrials2.Rdata")  # 
 save.image("~/Dropbox/EmilyComputerBackup/Documents/Niwot_King/FiguresStats/kingdata/MovingUphill5_SubsettingPCArange.Rdata")  # 
 
 load("~/Dropbox/EmilyComputerBackup/Documents/Niwot_King/FiguresStats/kingdata/MovingUphill5_WorkspaceTrials1.Rdata") 

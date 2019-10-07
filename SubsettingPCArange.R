@@ -55,6 +55,32 @@ hmscXlo3<-hmscXlo2[order(rownames(hmscXlo2)),]
 hmiscDISTlo2<-hmiscDISTlo[order(rownames(hmiscDISTlo)),]
 
 
+#me
+ind<-which(comm.bio$lomehi=="me")
+hmscXme<-data.frame(snowdepth=comm.bio$snowdepth,pH=comm.bio$pH,moisture=comm.bio$moisture,cvsnow=comm.bio$cvsnow,pca1=comm.bio$pca1)[ind,]
+rownames(hmscXme)<-comm.bio$X.SampleID[ind]
+
+which(hmscXme$pca1<(-0.330213)|(hmscXme$pca1>(-0.012)))
+set.seed(6);ind<-c(sample(c(1:6,8:16,18:25),size=10),7,17);ind #make sure 7 and 17 are not included
+hmscXme2<-data.frame(snowdepth=hmscXme$snowdepth,pH=hmscXme$pH,moisture=hmscXme$moisture,cvsnow=hmscXme$cvsnow)[ind,]
+rownames(hmscXme2)<-rownames(hmscXme)[ind]
+#range is 0.3192
+
+#subset y 
+ind<-which(rownames(hmscYme3)%in%rownames(hmscXme2))
+hmscYme4<-hmscYme3[ind,]
+
+#subset dist
+ind<-which(comm.bio$X.SampleID%in%rownames(hmscXme2))
+hmiscDISTme<-data.frame(X=comm.bio$X,Y=comm.bio$Y,elevation=comm.bio$elevation)[ind,]
+rownames(hmiscDISTme)<-comm.bio$X.SampleID[ind]
+
+#sort them the same
+hmscYme5<-hmscYme4[order(rownames(hmscYme4)),]
+hmscXme3<-hmscXme2[order(rownames(hmscXme2)),]
+hmiscDISTme2<-hmiscDISTme[order(rownames(hmiscDISTme)),]
+
+
 #hi
 ind<-which(comm.bio$lomehi=="hi")
 hmscXhi<-data.frame(snowdepth=comm.bio$snowdepth,pH=comm.bio$pH,moisture=comm.bio$moisture,cvsnow=comm.bio$cvsnow,pca1=comm.bio$pca1)[ind,]
@@ -82,22 +108,21 @@ hmiscDISThi2<-hmiscDISThi[order(rownames(hmiscDISThi)),]
 #select species with greater than X (X+1 or more) occurrences
 
 ## low ##
-ind<-which(colSums(hmscYlo5>0)>7)
+ind<-which(colSums(hmscYlo5>0)>8)
 #hmscYlo2sub<-hmscYlo2[,ind] #subset the raw data as well just for looking at histograms
 length(ind)
 hmscYlo6<-hmscYlo5[,ind]
 dim(hmscYlo6)
 
 ## medium ##
-ind<-which(colSums(hmscYme2>0)>11)
+ind<-which(colSums(hmscYme5>0)>8)
 length(ind)
-hmscYme4<-hmscYme3[,ind]
+hmscYme6<-hmscYme5[,ind]
 hmscXme
-dim(hmscYme4)
-dim(hmscXme)
+dim(hmscYme6)
 
 ## high ##
-ind<-which(colSums(hmscYhi5>0)>7)
+ind<-which(colSums(hmscYhi5>0)>8)
 length(ind)
 hmscYhi6<-hmscYhi5[,ind]
 dim(hmscYhi6)
@@ -121,14 +146,22 @@ hmiscDISThim<-as.matrix(dist(hmiscDISThi2))
 
 
 #### Modeling ####
-mod.lo<- boral(y = hmscYlo7, X = hmscXlo4, lv.control = list(num.lv = 3,type="spherical",distmat=hmiscDISTlom), family = c(rep("normal",157),rep("negative.binomial",1)), save.model = TRUE, calc.ics = T, mcmc.control = list(n.burnin = 10000, n.iteration = 40000, n.thin = 30, seed = 123))#
+dim(hmscYlo7)
+mod.lo<- boral(y = hmscYlo7, X = hmscXlo4, lv.control = list(num.lv = 2,type="spherical",distmat=hmiscDISTlom), family = c(rep("normal",106),rep("negative.binomial",0)), save.model = TRUE, calc.ics = T, mcmc.control = list(n.burnin = 10000, n.iteration = 40000, n.thin = 30, seed = 123))#
 rescor.lo <- get.residual.cor(mod.lo) 
 
-mod.hi<- boral(y = hmscYhi7, X = hmscXhi4, lv.control = list(num.lv = 3,type="spherical",distmat=hmiscDISThim), family = c(rep("normal",137),rep("negative.binomial",3)), save.model = TRUE, calc.ics = T, mcmc.control = list(n.burnin = 10000, n.iteration = 40000, n.thin = 30, seed = 123))#
-rescor.hi11 <- get.residual.cor(mod.hi) 
+dim(hmscYme7)
+mod.me<- boral(y = hmscYme7, X = hmscXme4, lv.control = list(num.lv = 2,type="spherical",distmat=hmiscDISTmem), family = c(rep("normal",89),rep("negative.binomial",1)), save.model = TRUE, calc.ics = T, mcmc.control = list(n.burnin = 10000, n.iteration = 40000, n.thin = 30, seed = 123))#
+rescor.me <- get.residual.cor(mod.me) 
+
+dim(hmscYhi7)
+mod.hi<- boral(y = hmscYhi7, X = hmscXhi4, lv.control = list(num.lv = 2,type="spherical",distmat=hmiscDISThim), family = c(rep("normal",96),rep("negative.binomial",3)), save.model = TRUE, calc.ics = T, mcmc.control = list(n.burnin = 10000, n.iteration = 40000, n.thin = 30, seed = 123))#
+rescor.hi <- get.residual.cor(mod.hi) 
 
 
 
+# >8, 3lv, complexity good, total interactions not
+# >8, 2lv, complexity good, total interactions good, let's use this
 
 
 
@@ -166,25 +199,15 @@ graphlo2$layout <- layout_in_circle(graphlo2,order=orderlo)
 plot(graphlo2,vertex.size=4,edge.curved=F,edge.color=ifelse(myedgelistlo$weight==1,"#687dcb","#ce4d42"),vertex.color=colorgraphlo$color,edge.width=.7,vertex.label=NA)#,vertex.shape=shapesgraplo  positive is blue
 #dev.off()
 
-colorgraphlo[which(colorgraphlo$group=="Mesofauna"),]
-colorgraphlo[which(colorgraphlo$group=="Fungi"),]
-colorgraphlo[which(colorgraphlo$group2=="PhotosyntheticBacteria"),]
-colorgraphlo[which(colorgraphlo$group2=="PhotosyntheticEukaryota"),]
-
-temp<-colorgraphlo[which(colorgraphlo$group=="Mesofauna"),"otu"]
-temp2<-myedgelistlo[which(myedgelistlo$X1%in%temp|myedgelistlo$X2%in%temp),]
-dim(temp2)
-
-
 
 
 
 
 ##### Network diagrams for me #####
 #creating sparse matrix
-colMatme<-rescor.me11flv3auto$sig.correlaton
-colMatme[which(rescor.me11flv3auto$sig.correlaton>0)]<-1
-colMatme[which(rescor.me11flv3auto$sig.correlaton<0)]<- -1
+colMatme<-rescor.me$sig.correlaton
+colMatme[which(rescor.me$sig.correlaton>0)]<-1
+colMatme[which(rescor.me$sig.correlaton<0)]<- -1
 
 graphme1<-graph_from_adjacency_matrix(colMatme, mode = c( "undirected"), weighted = T, diag = F,add.colnames = NULL, add.rownames = NULL)
 myedgelistme<-data.frame(as_edgelist(graphme1),weight=E(graphme1)$weight) #just the edges
@@ -209,20 +232,6 @@ graphme2$layout <- layout_in_circle(graphme2,order=orderme)
 #plot(graphme2,vertex.size=4,edge.curved=F,vertex.label=NA,edge.color=ifelse(myedgelistme$weight==1,"#ce4d42","#687dcb"),vertex.color=colorgraphme$color,edge.width=.7)#,layout=l3
 plot(graphme2,vertex.size=4,edge.curved=F,vertex.label=NA,edge.color=ifelse(myedgelistme$weight==1,"#687dcb","#ce4d42"),vertex.color=colorgraphme$color,edge.width=.7)#,layout=l3
 #dev.off()
-
-temp<-colorgraphme[which(colorgraphme$group=="Plant"),"otu"]
-temp2<-myedgelistme[which(myedgelistme$X1%in%temp|myedgelistme$X2%in%temp),]
-temp2
-dim(temp2)
-
-temp<-colorgraphme[which(colorgraphme$group=="Mesofauna"),"otu"]
-temp2<-myedgelistme[which(myedgelistme$X1%in%temp|myedgelistme$X2%in%temp),]
-temp2
-dim(temp2)
-
-colorgraphme[which(colorgraphme$otu=="Bf8ab7e424f6976c81b44b3c809dc6ce7"),]
-colorgraphme[which(colorgraphme$otu=="Bdc4a7fab972ac91dd37631d279420a08"),]
-
 
 
 
@@ -257,11 +266,12 @@ graphhi2$layout <- layout_in_circle(graphhi2,order=orderhi)
 plot(graphhi2,vertex.size=4,edge.curved=F,vertex.label=NA,edge.color=ifelse(myedgelisthi$weight==1,"#687dcb","#ce4d42"),vertex.color=colorgraphhi$color,edge.width=.7)#,layout=l3  
 #dev.off()
 
-colorgraphhi[which(colorgraphhi$group=="Mesofauna"),]
-colorgraphhi[which(colorgraphhi$group=="Plant"),]
 
-temp<-colorgraphhi[which(colorgraphhi$group=="Plant"),"otu"]
-temp2<-myedgelisthi[which(myedgelisthi$X1%in%temp|myedgelisthi$X2%in%temp),]
-temp2
-dim(temp2)
 
+length(E(graphlo2))/length(V(graphlo2))
+length(E(graphme2))/length(V(graphme2))
+length(E(graphhi2))/length(V(graphhi2))
+
+length(E(graphlo2))
+length(E(graphme2))
+length(E(graphhi2))

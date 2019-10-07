@@ -61,15 +61,18 @@ head(biogeo4)
 biogeo4a<-biogeo4%>%
   select(Plant_Dens,Plant_Div,TC,TN,NH4,NO3,pH,WHC,moisture,snowdepth,elevation,plantcover,MicC,MicN)#,IN,DOC,DON,
 ind<-which(is.na(rowSums(biogeo4a))==F)
-biogeo5<-biogeo4a[ind,]
+d<-biogeo4a[ind,]
 mynames<-rownames(biogeo5)
 
-#biogeo4a<-biogeo4%>%
-#  select(Plant_Dens,Plant_Div,TC,TN,NH4,NO3,pH,WHC,moisture,snowdepth,snow2015,cvsnow,elevation,plantcover)#,IN,DOC,DON,
-#ind<-which(is.na(rowSums(biogeo4a))==F)
-#ind<-which(rownames(biogeo4a)%in%mynames)
-#biogeo5<-biogeo4a[ind,]
-#dim(biogeo5)
+# #for correlation matrix
+# biogeo4a<-biogeo4%>%
+#  select(TC,TN,NH4,NO3,MicC,MicN,pH,WHC,moisture,snowdepth,elevation,Plant_Dens,Plant_Div,plantcover,snow2015,cvsnow)#,IN,DOC,DON,
+# ind<-which(is.na(rowSums(biogeo4a))==F)
+# ind<-which(rownames(biogeo4a)%in%mynames)
+# biogeo5<-biogeo4a[ind,]
+# dim(biogeo5)
+# write.csv(round(rcorr(as.matrix(biogeo5))$r,2),"corrR.csv")
+# write.csv(round(rcorr(as.matrix(biogeo5))$P,4),"corrP.csv")
 
 mypca<-rda(biogeo5,scale=T,na.action=na.omit)
 #plot(mypca)

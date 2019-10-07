@@ -314,6 +314,11 @@ rcorr(as.matrix(hmscXlo4[,1:(dim(hmscXlo4)[2])]))
 rcorr(as.matrix(hmscXme4[,1:(dim(hmscXme4)[2])]))
 rcorr(as.matrix(hmscXhi4[,1:(dim(hmscXhi4)[2])]))
 
+# correlations: 
+# lo: pH and moisture -.47, 0.017 cvsnow snowdepth -.5 0.011
+# me: pH and snowdepth -0.6, 0.0014, snowdepth and cvsnow -.52 0.0076
+# hi: pH and snowdepth -.55 0.004, cvsnow and pH .44 0.28, cvsnow and snoepth -.62 0.001
+
 ##### Fit the LVM using boral and calculate residual correlation matrix#####
 
 #List of files produced:
@@ -950,8 +955,7 @@ statslo2<-statslo[order(statslo$degree,decreasing=T),]
 statslo2[1:5,1:3]
 print(statslo2, row.names = F)
 colorgraphlo[which(colorgraphlo$otu%in%statslo2[1:10,1]),]
-#the second most connected organism is a photosynthetic Chloroflexi (84 connections)
-#the seventh most connected organism is ktedonobacteria (73 connections)
+#the fourth most connected organism is a photosynthetic Chloroflexi (81 connections)
 
 statsme<-data.frame(otu=row.names((as.matrix(degree(graphme2,normalized=T)))),degree=(as.matrix(degree(graphme2,normalized=F))),norm_degree=(as.matrix(degree(graphme2,normalized=TRUE))),closeness=(as.matrix(closeness(graphme2,normalized=TRUE))),betweenness=(as.matrix(betweenness(graphme2,normalized=TRUE))))
 statsme[1:5,1:5]
@@ -959,14 +963,15 @@ statsme2<-statsme[order(statsme$degree,decreasing=T),]
 statsme2[1:5,1:2]
 print(statsme2, row.names = F)
 colorgraphme[which(colorgraphme$otu%in%statsme2[1:10,1]),]
+#the 10th most connected is chemoautotrophic
 
 statshi<-data.frame(otu=row.names((as.matrix(degree(graphhi2,normalized=T)))),degree=(as.matrix(degree(graphhi2,normalized=F))),norm_degree=(as.matrix(degree(graphhi2,normalized=TRUE))),closeness=(as.matrix(closeness(graphhi2,normalized=TRUE))),betweenness=(as.matrix(betweenness(graphhi2,normalized=TRUE))))
 statshi[1:5,1:5]
 statshi2<-statshi[order(statshi$degree,decreasing=T),]
 statshi2[1:5,1:2]
 print(statshi2, row.names = F)
-colorgraphhi[which(colorgraphhi$otu%in%statshi2[4,1]),]
-#the fourth most connected is chemoautotrophic
+colorgraphhi[which(colorgraphhi$otu%in%statshi2[1:10,1]),]
+#the 9th most connected is chemoautotrophic
 
 
 
@@ -1049,17 +1054,17 @@ outputPsinteractionhi[ind2,]
 #counting total interations with Ps microbes, not knowing who the connection is with or pos/neg
 temp<-colorgraphlo[which(colorgraphlo$group2=="PhotosyntheticBacteria"|colorgraphlo$group2=="PhotosyntheticEukaryota"),"otu"]
 temp2<-myedgelistlo[which(myedgelistlo$X1%in%temp|myedgelistlo$X2%in%temp),]
-dim(temp2) #370 interactions
+dim(temp2) #329 interactions
 
 temp<-colorgraphme[which(colorgraphme$group2=="PhotosyntheticBacteria"|colorgraphme$group2=="PhotosyntheticEukaryota"),"otu"]
 temp2<-myedgelistme[which(myedgelistme$X1%in%temp|myedgelistme$X2%in%temp),]
 temp2
-dim(temp2) #148 interactions
+dim(temp2) #79 interactions
 colorgraphme[which(colorgraphme$otu%in%temp2$X1|colorgraphme$otu%in%temp2$X2),]
 
 temp<-colorgraphhi[which(colorgraphhi$group2=="PhotosyntheticBacteria"|colorgraphhi$group2=="PhotosyntheticEukaryota"),"otu"]
 temp2<-myedgelisthi[which(myedgelisthi$X1%in%temp|myedgelisthi$X2%in%temp),]
-dim(temp2) #2 interactions
+dim(temp2) #1 interactions
 temp2
 colorgraphhi[which(colorgraphhi$otu%in%temp2$X1|colorgraphhi$otu%in%temp2$X2),]
 
@@ -1073,8 +1078,8 @@ temp1<-temp[ind,]
 #temp<-colorgraphlo[which(colorgraphlo$group=="Bacteria"),"otu"]
 temp2<-myedgelistlo[which(myedgelistlo$X1%in%temp1$otu|myedgelistlo$X2%in%temp1$otu),]
 head(temp2)
-sum(temp2$weight[temp2$weight==1])
-dim(temp2) #210 interactions with Ktedonobacteria
+sum(temp2$weight[temp2$weight==1])#271(210old) positive interactions with Ktedonobacteria includes euks and everything
+dim(temp2) 
 colnames(temp2)[1]<-"otu"
 temp2<-merge(temp2,colorgraphlo[,c(1,2)])
 colnames(temp2)[4]<-"X1c"
@@ -1090,10 +1095,11 @@ temp2$X1c[ind]<-"HeterotrophicBacteria"
 #now X2c is all the partner of the ktedonobacteria
 temp3<-temp2[which(temp2$weight==1),]
 aggregate.data.frame(temp3$weight,by=list(temp3$X2c),sum)
-#subtract 7 positive interactions are between two Ktedonobacteria
+#subtract 10(7old) positive interactions are between two Ktedonobacteria
 myedgelistlo[which(myedgelistlo$X1%in%temp1$otu&myedgelistlo$X2%in%temp1$otu),]
 dim(myedgelistlo[which(myedgelistlo$X1%in%temp1$otu&myedgelistlo$X2%in%temp1$otu),])
-210-7
+156-10
+#this was incorrect, it was using the total number of positiv interactions, not just heterotrophic bacteria 271-10 #(210-7old)
 
 temp<-colorgraphme[which(colorgraphme$group=="Bacteria"),]
 ind<-grep("Ktedonobacteria",temp$taxstring)
@@ -1120,7 +1126,7 @@ temp3<-temp2[which(temp2$weight==1),]
 aggregate.data.frame(temp3$weight,by=list(temp3$X2c),sum)
 #subtract 4 positive interactions are between two Ktedonobacteria
 dim(myedgelistme[which(myedgelistme$X1%in%temp1$otu&myedgelistme$X2%in%temp1$otu),])
-165-4
+33-0#(old165-4)
 
 temp<-colorgraphhi[which(colorgraphhi$group=="Bacteria"),]
 ind<-grep("Ktedonobacteria",temp$taxstring)
@@ -1147,7 +1153,7 @@ temp3<-temp2[which(temp2$weight==1),]
 aggregate.data.frame(temp3$weight,by=list(temp3$X2c),sum)
 #subtract 1 positive interactions are between two Ktedonobacteria
 dim(myedgelisthi[which(myedgelisthi$X1%in%temp1$otu&myedgelisthi$X2%in%temp1$otu),])
-7-0
+4-0 #(7-0 old)
 
 
 
@@ -1225,23 +1231,23 @@ length(temp)
 outputUsinteractionlo<-myedgelistlo[which(myedgelistlo$X1%in%temp|myedgelistlo$X2%in%temp),]
 head(outputUsinteractionlo)
 dim(outputUsinteractionlo)
-1161/2829
+1389/3481 #old1161/2829
 
 temp<-colorgraphme[which(colorgraphme$group2=="UnknownEukaryota"|colorgraphme$group2=="UnknownBacteria"),"otu"]
 length(temp)
 outputUsinteractionme<-myedgelistme[which(myedgelistme$X1%in%temp|myedgelistme$X2%in%temp),]
 head(outputUsinteractionme)
 dim(outputUsinteractionme)
-659/2037
+311/963#659/2037
 
 temp<-colorgraphhi[which(colorgraphhi$group2=="UnknownEukaryota"|colorgraphhi$group2=="UnknownBacteria"),"otu"]
 length(temp)
 outputUsinteractionhi<-myedgelisthi[which(myedgelisthi$X1%in%temp|myedgelisthi$X2%in%temp),]
 head(outputUsinteractionhi)
 dim(outputUsinteractionhi)
-183/594
+106/452#183/594
 
-(1161+659+183)/(2829+2037+594)
+(1389+311+106)/(3481+963+452)
 
 
 
