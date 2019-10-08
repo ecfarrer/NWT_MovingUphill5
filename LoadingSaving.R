@@ -38,7 +38,7 @@ MovingUphill4_WorkspaceTrials2.Rdata #reduced network analysis, only final model
 save.image("~/Dropbox/EmilyComputerBackup/Documents/Niwot_King/FiguresStats/kingdata/MovingUphill5_WorkspaceTrials2.Rdata")  # 
 save.image("~/Dropbox/EmilyComputerBackup/Documents/Niwot_King/FiguresStats/kingdata/MovingUphill5_SubsettingPCArange.Rdata")  # 
 
-load("~/Dropbox/EmilyComputerBackup/Documents/Niwot_King/FiguresStats/kingdata/MovingUphill5_WorkspaceTrials1.Rdata") 
+load("~/Dropbox/EmilyComputerBackup/Documents/Niwot_King/FiguresStats/kingdata/MovingUphill5_WorkspaceTrials2.Rdata") 
 
 
 #rm(list=setdiff(ls(), c("fit.lolv4occ9exp4","rescor.lolv4occ9exp4")))
@@ -105,6 +105,7 @@ library(ggplot2)
 library(grid) #for unit function in ggplot2 for legend 
 
 library(vegan)
+library(multcomp)
 
 #for rarefaction curves
 #install.packages("remotes")
