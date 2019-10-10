@@ -391,7 +391,7 @@ rescor.hi11flv3auto <- get.residual.cor(mod.hi11flv3auto)
 save.image("~/Dropbox/EmilyComputerBackup/Documents/Niwot_King/FiguresStats/kingdata/MovingUphill5_WorkspaceTrials1.Rdata")  
 
 
-#Testing diffrent numbers of latent variables
+#Testing different numbers of latent variables
 mod.mef9lv2<- boral(y = hmscYme5, X = hmscXme3, lv.control = list(num.lv = 2), family = c(rep("normal",414),rep("negative.binomial",4)), save.model = TRUE, calc.ics = T, mcmc.control = list(n.burnin = 10000, n.iteration = 40000, n.thin = 30, seed = 123))#
 rescor.mef9lv2 <- get.residual.cor(mod.mef9lv2) 
 mod.mef9lv3<- boral(y = hmscYme5, X = hmscXme3, lv.control = list(num.lv = 3), family = c(rep("normal",414),rep("negative.binomial",4)), save.model = TRUE, calc.ics = T, mcmc.control = list(n.burnin = 10000, n.iteration = 40000, n.thin = 30, seed = 123))#
@@ -430,8 +430,15 @@ mod.lo11flv3auto$hpdintervals # 95% credible intervals for model parameters.
 
 #Check convergence
 #Geweke diagnostic - a z test testing whether the first 10% and the last 50% are diffrent (i think those are the fractions, doesn't really matter exactly), if it is significant, then the means are different and it didn't converge
+#pdf("/Users/farrer/Dropbox/EmilyComputerBackup/Documents/Niwot_King/FiguresStats/kingdata/Figs/FigsforFrontiersSubmission/tracelo.pdf",width=10,height=5)
 plot(get.mcmcsamples(mod.lo11flv3auto)[,1])
-plot(get.mcmcsamples(mod.lo11flv3auto)[,2])
+dev.off()
+#pdf("/Users/farrer/Dropbox/EmilyComputerBackup/Documents/Niwot_King/FiguresStats/kingdata/Figs/FigsforFrontiersSubmission/traceme.pdf",width=10,height=5)
+plot(get.mcmcsamples(mod.me11flv3auto)[,1])
+dev.off()
+#pdf("/Users/farrer/Dropbox/EmilyComputerBackup/Documents/Niwot_King/FiguresStats/kingdata/Figs/FigsforFrontiersSubmission/tracehi.pdf",width=10,height=5)
+plot(get.mcmcsamples(mod.hi11flv3auto)[,1])
+dev.off()
 
 #the order is effect of pH for each of the 600 species, then effect of snowdepth, then moisture, then cvsnow, for low, there are 306 taxa, and then 1, 2, 3, 4 x variables: X.coefs[170,1] is the effect of pH in species 170
 mcmchi<-get.mcmcsamples(mod.lo11flv3auto)
@@ -446,12 +453,12 @@ gew.pvals[1:5]
 gew.pvals[which(gew.pvals<.05)] #technically these did not converge, however, the trace plots look fine to me
 p.adjust(gew.pvals, method = "holm")
 
-mod.lo11flv3auto$geweke.diag
-mod.me11flv3$geweke.diag
-mod.hi11flv3$geweke.diag
+# mod.lo11flv3auto$geweke.diag
+# mod.me11flv3auto$geweke.diag
+# mod.hi11flv3auto$geweke.diag
 mod.lo11flv3auto$geweke.diag$prop.exceed
-mod.me11flv3$geweke.diag$prop.exceed
-mod.hi11flv3$geweke.diag$prop.exceed
+mod.me11flv3auto$geweke.diag$prop.exceed
+mod.hi11flv3auto$geweke.diag$prop.exceed
 
 #example of one that did not converge
 #(1st species) N6f914ead2160e51670d3dc70c25e107b for snowdepth did not converge, but looking at the trace plot, it seems fine
@@ -463,6 +470,83 @@ plot(get.mcmcsamples(mod.lo11flv3)[,3])
 mean(get.mcmcsamples(fit.hilv4occ9exp4f)[,1]) #mean is -1.710607
 #mean of the extracted model coefficients (to make sure I'm looking at the right parameter)
 fit.hilv4occ9exp4f$X.coefs.mean  #-1.710607072, yes checks
+
+
+
+
+##Dunn-Smyth residual plots to check model assumption, outliers etc. The first plot should not have a funnel
+#why it has a weird shape with no points in the lower left corner: it is fitting values that are really low, lower than the estimate for 0, thus the residual is never going to be negative b/c it is lower than the estimate for 0
+
+plot(mod.lo11flv3auto)
+plot(mod.me11flv3auto)
+plot(mod.hi11flv3auto)
+
+lof.fitted<-fitted.boral(mod.lo11flv3auto)$out
+lof.fitted2<-lof.fitted
+for (j in 1:ncol(mod.lo11flv3auto$y)) {
+  if (mod.lo11flv3auto$family[j] %in% c("poisson", "lnormal", "negative.binomial", "tweedie", "exponential")) 
+    lof.fitted2[, j] <- log(lof.fitted[, j] + 1)#+ 1e-05, I changed this, it is arbitrary so that you can take the log
+  if (mod.lo11flv3auto$family[j] == "normal") 
+    lof.fitted2[, j] <- (lof.fitted[, j])}
+lof.resid<-ds.residuals(mod.lo11flv3auto)$residuals
+#hist(lof.resid[,306])
+i=2
+plot(lof.fitted2[,i],lof.resid[,i])#,ylim=c(-3,2),xlim=c(-5,6)
+#plot(mod.lo11flv3auto$y[,i],lof.resid[,i])
+#plot(mod.lo11flv3auto$y[,i],lof.fitted2[,i])
+#pdf("/Users/farrer/Dropbox/EmilyComputerBackup/Documents/Niwot_King/FiguresStats/kingdata/Figs/FigsforFrontiersSubmission/residualslo.pdf",width=5,height=5)
+plot(lof.fitted2[,],lof.resid[,],ylab="Dunn-Smyth residuals",xlab="Fitted values")
+dev.off()
+
+mef.fitted<-fitted.boral(mod.me11flv3auto)$out
+mef.fitted2<-mef.fitted
+for (j in 1:ncol(mod.me11flv3auto$y)) {
+  if (mod.me11flv3auto$family[j] %in% c("poisson", "lnormal", "negative.binomial", "tweedie", "exponential")) 
+    mef.fitted2[, j] <- log(mef.fitted[, j] + 1)#+ 1e-05, I changed this, it is arbitrary so that you can take the log
+  if (mod.me11flv3auto$family[j] == "normal") 
+    mef.fitted2[, j] <- (mef.fitted[, j])}
+mef.resid<-ds.residuals(mod.me11flv3auto)$residuals
+#hist(lof.resid[,306])
+i=2
+plot(mef.fitted2[,i],mef.resid[,i])#,ylim=c(-3,2),xlim=c(-5,6)
+#pdf("/Users/farrer/Dropbox/EmilyComputerBackup/Documents/Niwot_King/FiguresStats/kingdata/Figs/FigsforFrontiersSubmission/residualsme.pdf",width=5,height=5)
+plot(mef.fitted2[,],mef.resid[,],ylab="Dunn-Smyth residuals",xlab="Fitted values")
+dev.off()
+
+hif.fitted<-fitted.boral(mod.hi11flv3auto)$out
+hif.fitted2<-hif.fitted
+for (j in 1:ncol(mod.hi11flv3auto$y)) {
+  if (mod.hi11flv3auto$family[j] %in% c("poisson", "lnormal", "negative.binomial", "tweedie", "exponential")) 
+    hif.fitted2[, j] <- log(hif.fitted[, j] + 1)#+ 1e-05, I changed this, it is arbitrary so that you can take the log
+  if (mod.hi11flv3auto$family[j] == "normal") 
+    hif.fitted2[, j] <- (hif.fitted[, j])}
+hif.resid<-ds.residuals(mod.hi11flv3auto)$residuals
+#hist(lof.resid[,306])
+i=2
+plot(hif.fitted2[,i],hif.resid[,i])#,ylim=c(-3,2),xlim=c(-5,6)
+#pdf("/Users/farrer/Dropbox/EmilyComputerBackup/Documents/Niwot_King/FiguresStats/kingdata/Figs/FigsforFrontiersSubmission/residualshi.pdf",width=5,height=5)
+plot(hif.fitted2[,],hif.resid[,],ylab="Dunn-Smyth residuals",xlab="Fitted values")
+dev.off()
+
+
+lof.resid2 <- as.vector(unlist(lof.resid))
+mef.resid2 <- as.vector(unlist(mef.resid))
+hif.resid2 <- as.vector(unlist(hif.resid))
+
+#all diagnostic plots together 
+#pdf("/Users/farrer/Dropbox/EmilyComputerBackup/Documents/Niwot_King/FiguresStats/kingdata/Figs/FigsforFrontiersSubmission/diagnosticplots.pdf",width=7,height=7)
+par(mfrow = c(3, 3))
+plot(lof.fitted2[,],lof.resid[,],ylab="Dunn-Smyth residuals",xlab="Fitted values",main="A. Early residual plot")
+plot(mef.fitted2[,],mef.resid[,],ylab="Dunn-Smyth residuals",xlab="Fitted values",main="B. Mid residual plot")
+plot(hif.fitted2[,],hif.resid[,],ylab="Dunn-Smyth residuals",xlab="Fitted values",main="C. Late residual plot")
+qqnorm(lof.resid2[is.finite(lof.resid2)],main="D. Early Q-Q plot")
+qqnorm(mef.resid2[is.finite(mef.resid2)],main="E. Mid Q-Q plot")
+qqnorm(hif.resid2[is.finite(hif.resid2)],main="F. Late Q-Q plot")
+plot(seq(from=1,to=30000,by=30),get.mcmcsamples(mod.lo11flv3auto)[,1],type="l",ylab="Parameter value",xlab="MCMC Iterations",main="G. Early trace plot")
+plot(seq(from=1,to=30000,by=30),get.mcmcsamples(mod.me11flv3auto)[,1],type="l",ylab="Parameter value",xlab="MCMC Iterations",main="H. Mid trace plot")
+plot(seq(from=1,to=30000,by=30),get.mcmcsamples(mod.hi11flv3auto)[,1],type="l",ylab="Parameter value",xlab="MCMC Iterations",main="I. Late trace plot")
+#dev.off()
+par(mfrow = c(1, 1))
 
 
 
@@ -522,6 +606,7 @@ hist(temp)
 
 ##### Doing forward selection to select fixed variables #####
 #Using autocorrelation
+#while the successional stage PCA shows that with all 75 plots, many of the env variables are non-normally distributed, below when you subset 25 lo me and hi plots the env variables are pretty normally distributed. the one exception is cvsnow in lo but there is not much I can do about that. 
 
 #Round 1
 temphi<-data.frame(snowdepth=rep(NA,273), TC=rep(NA,273), pH=rep(NA,273), moisture=rep(NA,273), TN=rep(NA,273), NH4=rep(NA,273), NO3=rep(NA,273), WHC=rep(NA,273), elevation=rep(NA,273), snow2015=rep(NA,273), cvsnow=rep(NA,273))
@@ -667,24 +752,6 @@ sort(colMeans(rbind(temphi,tempme,templo),na.rm=T))
 cbind(mod.lo11flv3auto$lv.coefs.mean,mod.lo11flv3auto$X.coefs.mean)
 mod.lo11flv3auto$X.coefs.mean
 
-##Dunn-Smyth residual plots to check model assumption, outliers etc. The first plot should not have a funnel
-plot(mod.lo11flv3auto)
-plot(mod.me11flv3)
-plot(mod.hi11flv3)
-plot(mod.hi9pois)
-plot(mod.hi9)
-
-lof.resid<-ds.residuals(mod.lo11flv3auto)
-str(lof.resid)
-hist(lof.resid$residuals[,10])
-
-mef.resid<-ds.residuals(mod.me11flv3)
-str(mef.resid)
-hist(mef.resid$residuals[,100])
-
-hif.resid<-ds.residuals(mod.hi11flv3)
-dim(hif.resid$residuals)
-hist(hif.resid$residuals[,10])
 
 
 
@@ -792,7 +859,7 @@ orderlo<-order(colorgraphlo$group2)
 graphlo2$layout <- layout_in_circle(graphlo2,order=orderlo)
 #graphlo2$layout <- layout_in_circle
 
-#pdf("/Users/farrer/Dropbox/EmilyComputerBackup/Documents/Niwot_King/FiguresStats/kingdata/Figs/FigsforMolEcolSubmission/networklocircleposblue.pdf") 
+#pdf("/Users/farrer/Dropbox/EmilyComputerBackup/Documents/Niwot_King/FiguresStats/kingdata/Figs/FigsforFrontiersSubmission/networklocircleposblue.pdf") 
 #plot(graphlo2,vertex.size=4,edge.curved=F,edge.color=ifelse(myedgelistlo$weight==1,"#ce4d42","#687dcb"),vertex.color=colorgraphlo$color,edge.width=.7,vertex.label=NA)#,vertex.shape=shapesgraplo  positive is red
 plot(graphlo2,vertex.size=4,edge.curved=F,edge.color=ifelse(myedgelistlo$weight==1,"#687dcb","#ce4d42"),vertex.color=colorgraphlo$color,edge.width=.7,vertex.label=NA)#,vertex.shape=shapesgraplo  positive is blue
 #dev.off()
@@ -841,7 +908,7 @@ orderme<-order(colorgraphme$group2)
 graphme2$layout <- layout_in_circle(graphme2,order=orderme)
 #graphme2$layout <- layout_in_circle
 
-#pdf("/Users/farrer/Dropbox/EmilyComputerBackup/Documents/Niwot_King/FiguresStats/kingdata/Figs/FigsforMolEcolSubmission/networkmecircleposblue.pdf") 
+#pdf("/Users/farrer/Dropbox/EmilyComputerBackup/Documents/Niwot_King/FiguresStats/kingdata/Figs/FigsforFrontiersSubmission/networkmecircleposblue.pdf") 
 #plot(graphme2,vertex.size=4,edge.curved=F,vertex.label=NA,edge.color=ifelse(myedgelistme$weight==1,"#ce4d42","#687dcb"),vertex.color=colorgraphme$color,edge.width=.7)#,layout=l3
 plot(graphme2,vertex.size=4,edge.curved=F,vertex.label=NA,edge.color=ifelse(myedgelistme$weight==1,"#687dcb","#ce4d42"),vertex.color=colorgraphme$color,edge.width=.7)#,layout=l3
 #dev.off()
@@ -893,7 +960,7 @@ orderhi<-order(colorgraphhi$group2)
 graphhi2$layout <- layout_in_circle(graphhi2,order=orderhi)
 #graphhi2$layout <- layout_in_circle
 
-#pdf("/Users/farrer/Dropbox/EmilyComputerBackup/Documents/Niwot_King/FiguresStats/kingdata/Figs/FigsforMolEcolSubmission/networkhicircleposblue.pdf") 
+#pdf("/Users/farrer/Dropbox/EmilyComputerBackup/Documents/Niwot_King/FiguresStats/kingdata/Figs/FigsforFrontiersSubmission/networkhicircleposblue.pdf") 
 #plot(graphhi2,vertex.size=4,edge.curved=F,vertex.label=NA,edge.color=ifelse(myedgelisthi$weight==1,"#ce4d42","#687dcb"),vertex.color=colorgraphhi$color,edge.width=.7)#,layout=l3  
 plot(graphhi2,vertex.size=4,edge.curved=F,vertex.label=NA,edge.color=ifelse(myedgelisthi$weight==1,"#687dcb","#ce4d42"),vertex.color=colorgraphhi$color,edge.width=.7)#,layout=l3  
 #dev.off()

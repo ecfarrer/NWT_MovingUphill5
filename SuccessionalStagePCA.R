@@ -61,7 +61,7 @@ head(biogeo4)
 biogeo4a<-biogeo4%>%
   select(Plant_Dens,Plant_Div,TC,TN,NH4,NO3,pH,WHC,moisture,snowdepth,elevation,plantcover,MicC,MicN)#,IN,DOC,DON,
 ind<-which(is.na(rowSums(biogeo4a))==F)
-d<-biogeo4a[ind,]
+biogeo5<-biogeo4a[ind,]
 mynames<-rownames(biogeo5)
 
 # #for correlation matrix
@@ -73,6 +73,22 @@ mynames<-rownames(biogeo5)
 # dim(biogeo5)
 # write.csv(round(rcorr(as.matrix(biogeo5))$r,2),"corrR.csv")
 # write.csv(round(rcorr(as.matrix(biogeo5))$P,4),"corrP.csv")
+
+#trying to log transform all skewed variables:
+#pH, snowdepth,elevation is more or less normal
+# biogeo5$Plant_Dens<-log(biogeo5$Plant_Dens+1)
+# biogeo5$Plant_Div<-log(biogeo5$Plant_Div+1)
+# biogeo5$TC<-log(biogeo5$TC)
+# biogeo5$TN<-log(biogeo5$TN)
+# biogeo5$NH4<-log(biogeo5$NH4+.2)
+# biogeo5$NO3<-log(biogeo5$NO3+.2)
+# biogeo5$WHC<-log(biogeo5$WHC)
+# biogeo5$moisture<-log(biogeo5$moisture)
+# biogeo5$plantcover<-log(biogeo5$plantcover+.02)
+# biogeo5$MicC<-log(biogeo5$MicC+150)
+# biogeo5$MicN<-log(biogeo5$MicN+10)
+#surprisingly this doesn't help too much, the range of lo is 0.83, me 0.56, hi 1.8 (two fold difference)
+#the regular way the range of lo is 0.38, me 0.32, hi 2.9 (7 fold difference)
 
 mypca<-rda(biogeo5,scale=T,na.action=na.omit)
 #plot(mypca)
@@ -98,8 +114,9 @@ succession3<-succession2[order(succession2$pca1),]
 #succession3old<-succession2[order(succession2$pca1),]
 succession3$lomehi<-rep(c('lo','me','hi'),each=25)
 #succession3old$lomehi<-rep(c('lo','me','hi'),each=25)
+hist(succession3$pca1)
 
-#cbind(succession3,succession3old)
+#cbind(succession3,succession3old) #when I log transform, the plot classification into lo me hi is different
 
 plot(biogeo2$snowdepth,biogeo2$Plant_Dens)
 plot(biogeo2$snowdepth,biogeo2$pH)

@@ -35,10 +35,10 @@ MovingUphill4_WorkspaceTrials1.Rdata #reduced network analysis, only final model
 MovingUphill4_WorkspaceTrials2.Rdata #reduced network analysis, only final models
 
 
-save.image("~/Dropbox/EmilyComputerBackup/Documents/Niwot_King/FiguresStats/kingdata/MovingUphill5_WorkspaceTrials2.Rdata")  # 
+save.image("~/Dropbox/EmilyComputerBackup/Documents/Niwot_King/FiguresStats/kingdata/MovingUphill5_WorkspaceTrials1.Rdata")  # 
 save.image("~/Dropbox/EmilyComputerBackup/Documents/Niwot_King/FiguresStats/kingdata/MovingUphill5_SubsettingPCArange.Rdata")  # 
 
-load("~/Dropbox/EmilyComputerBackup/Documents/Niwot_King/FiguresStats/kingdata/MovingUphill5_WorkspaceTrials2.Rdata") 
+load("~/Dropbox/EmilyComputerBackup/Documents/Niwot_King/FiguresStats/kingdata/MovingUphill5_WorkspaceTrials1.Rdata") 
 
 
 #rm(list=setdiff(ls(), c("fit.lolv4occ9exp4","rescor.lolv4occ9exp4")))
