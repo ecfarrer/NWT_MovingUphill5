@@ -30,16 +30,15 @@ MovingUphill5_SubsettingPCArange.Rdata #subsetting low and hi at the same range 
 MovingUphill4_WorkspaceAnalysisNetworkTrials.Rdata #all the different trials I ran when deciding the parameters for the networks
 MovingUphill4_WorkspaceSubsetting.Rdata #subsetting hi plots 10 times 273 of the 306 species to make it similar to the number of taxa going in to the network analysis
 MovingUphill4_WorkspaceSimulations.Rdata # simulations based on Faust 2015
-MovingUphill4_WorkspaceRandomizations.Rdata #randomizing my data to detect false positives
-MovingUphill4_WorkspaceTrials1.Rdata #reduced network analysis, only final models, alternate back and forth
-MovingUphill4_WorkspaceTrials2.Rdata #reduced network analysis, only final models
-
+MovingUphill5_WorkspaceRandomizations.Rdata #randomizing my data to detect false positives
+MovingUphill5_Krona.Rdata #code for krona plots
+MovingUphill5_WorkspaceTrials1.Rdata #for boral models
+MovingUphill5_WorkspaceTrials2.Rdata #for boral models
 
 save.image("~/Dropbox/EmilyComputerBackup/Documents/Niwot_King/FiguresStats/kingdata/MovingUphill5_WorkspaceTrials1.Rdata")  # 
-save.image("~/Dropbox/EmilyComputerBackup/Documents/Niwot_King/FiguresStats/kingdata/MovingUphill5_SubsettingPCArange.Rdata")  # 
+save.image("~/Dropbox/EmilyComputerBackup/Documents/Niwot_King/FiguresStats/kingdata/MovingUphill5_Krona.Rdata")  # 
 
 load("~/Dropbox/EmilyComputerBackup/Documents/Niwot_King/FiguresStats/kingdata/MovingUphill5_WorkspaceTrials1.Rdata") 
-
 
 #rm(list=setdiff(ls(), c("fit.lolv4occ9exp4","rescor.lolv4occ9exp4")))
 

@@ -1374,5 +1374,7 @@ rm(list=setdiff(ls(), c("labelfile",
                         "datBacS5k2",
                         "datITSS5k2",
                         "plantcomp",
-                        "plantcomp2")))
+                        "plantcomp2",
+                        "biogeo6",
+                        "comm.bio")))
 

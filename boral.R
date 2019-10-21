@@ -326,7 +326,7 @@ rcorr(as.matrix(hmscXhi4[,1:(dim(hmscXhi4)[2])]))
 *mod.me11flv3
 *mod.hi11flv3
 
-### *THE FINAL MODELS THAT I WILL USE FOR THE MANUSCRIPT: mod.lo11flv3, mod.me11flv3, mod.hi11flv3 (calculating clr then subsetting data, keeping species with >11 frequency, 3 latent variables, plants modeled as neg.big)
+### *THE FINAL MODELS THAT I WILL USE FOR THE MANUSCRIPT: mod.lo11flv3auto, mod.me11flv3auto, mod.hi11flv3auto (calculating clr then subsetting data, keeping species with >11 frequency, 3 latent variables, plants modeled as neg.big)
 
 #Notes and decisions: 
 #changing from >8 to >9 frequency has very little impact on networks, just a few fewer taxa and interactions. 
@@ -387,8 +387,6 @@ rescor.me11flv3auto <- get.residual.cor(mod.me11flv3auto)
 #start 10:33-10:58 (model), cor 10:58-11:03
 mod.hi11flv3auto<- boral(y = hmscYhi5, X = hmscXhi4, lv.control = list(num.lv = 3,type="spherical",distmat=hmiscDISThim), family = c(rep("normal",265),rep("negative.binomial",8)), save.model = TRUE, calc.ics = T, mcmc.control = list(n.burnin = 10000, n.iteration = 40000, n.thin = 30, seed = 123))#
 rescor.hi11flv3auto <- get.residual.cor(mod.hi11flv3auto) 
-
-save.image("~/Dropbox/EmilyComputerBackup/Documents/Niwot_King/FiguresStats/kingdata/MovingUphill5_WorkspaceTrials1.Rdata")  
 
 
 #Testing different numbers of latent variables
@@ -873,9 +871,17 @@ temp<-colorgraphlo[which(colorgraphlo$group=="Mesofauna"),"otu"]
 temp2<-myedgelistlo[which(myedgelistlo$X1%in%temp|myedgelistlo$X2%in%temp),]
 dim(temp2)
 
-
-
-
+datBacS5otu[1:10,1:10]
+ind<-which(colnames(datBacS5otu)%in%verticesgraphlo$otu)
+Bacrelin<-datBacS5otu[,ind] #168 bacteria are in the network
+temp<-colnames(hmscYlo4)[41:270] #230 possible bacteria >11
+temp2<-setdiff(temp,colnames(Bacrelin))#62 not in network
+ind<-which(colnames(datBacS5otu)%in%temp2)
+Bacrelout<-datBacS5otu[,ind]
+mean(colSums(Bacrelin)/25)
+range(colSums(Bacrelin)/25)
+mean(colSums(Bacrelout)/25)
+range(colSums(Bacrelout)/25)
 
 
 ##### Network diagrams for me #####
@@ -913,17 +919,23 @@ graphme2$layout <- layout_in_circle(graphme2,order=orderme)
 plot(graphme2,vertex.size=4,edge.curved=F,vertex.label=NA,edge.color=ifelse(myedgelistme$weight==1,"#687dcb","#ce4d42"),vertex.color=colorgraphme$color,edge.width=.7)#,layout=l3
 #dev.off()
 
-temp<-colorgraphme[which(colorgraphme$group=="Plant"),"otu"]
-temp2<-myedgelistme[which(myedgelistme$X1%in%temp|myedgelistme$X2%in%temp),]
-temp2
-dim(temp2)
+
+colorgraphme[which(colorgraphme$group=="Mesofauna"),]
 
 temp<-colorgraphme[which(colorgraphme$group=="Mesofauna"),"otu"]
 temp2<-myedgelistme[which(myedgelistme$X1%in%temp|myedgelistme$X2%in%temp),]
 temp2
 dim(temp2)
 
-colorgraphme[which(colorgraphme$otu=="Bf8ab7e424f6976c81b44b3c809dc6ce7"),]
+temp<-colorgraphme[which(colorgraphme$otu=="S190036bb5dce2e292945a3937fe0ba5d"),"otu"]
+temp2<-myedgelistme[which(myedgelistme$X1%in%temp|myedgelistme$X2%in%temp),]
+temp2
+dim(temp2)
+
+
+colorgraphme[which(colorgraphme$group=="Eukaryota"),]
+
+colorgraphme[which(colorgraphme$otu=="S190036bb5dce2e292945a3937fe0ba5d"),]
 colorgraphme[which(colorgraphme$otu=="Bdc4a7fab972ac91dd37631d279420a08"),]
 
 
@@ -968,10 +980,23 @@ plot(graphhi2,vertex.size=4,edge.curved=F,vertex.label=NA,edge.color=ifelse(myed
 colorgraphhi[which(colorgraphhi$group=="Mesofauna"),]
 colorgraphhi[which(colorgraphhi$group=="Plant"),]
 
+temp<-colorgraphhi[which(colorgraphhi$group=="Mesofauna"),"otu"]
+temp2<-myedgelisthi[which(myedgelisthi$X1%in%temp|myedgelisthi$X2%in%temp),]
+temp2
+dim(temp2)
+
 temp<-colorgraphhi[which(colorgraphhi$group=="Plant"),"otu"]
 temp2<-myedgelisthi[which(myedgelisthi$X1%in%temp|myedgelisthi$X2%in%temp),]
 temp2
 dim(temp2)
+
+#bacteria associated with trispi
+colorgraphhi[which(colorgraphhi$otu=="Bade04fd51fe2a7ea6a5de7be6c690573"),]
+colorgraphhi[which(colorgraphhi$otu=="Bc40591c7285bb956c267d10185eba46a"),]
+
+#in bact/exported-rep-seqsN
+grep -C 2 "ade04fd51fe2a7ea6a5de7be6c690573" dna-sequences.fasta
+
 
 #Creating a subgraph
 colorgraphhi2<-colorgraphhi[which(colorgraphhi$group2=="Mesofauna"),]
@@ -979,7 +1004,7 @@ myedgelisthi2<-myedgelisthi[which(myedgelisthi[,"X1"]%in%colorgraphhi2$otu|myedg
 graph3<-subgraph.edges(graphhi2, eids=which(myedgelisthi2[,"X1"]%in%colorgraphhi2$otu|myedgelisthi2[,"X2"]%in%colorgraphhi2$otu), delete.vertices = F)
 plot(graph3,vertex.size=4,edge.curved=F,vertex.label=NA,edge.color=ifelse(myedgelisthi2$weight==1,"#ce4d42","#687dcb"),vertex.color=colorgraphhi$color)#,rescale=F,xlim=c(-1,1),ylim=c(-1,1)
 
-
+28-3
 
 
 
@@ -1093,6 +1118,9 @@ ind4<-which(outputPsinteractionme$ID1=="HeterotrophicBacteria"&outputPsinteracti
 length(ind1)+length(ind2)+length(ind3)+length(ind4)
 
 outputPsinteractionme[ind1,]
+
+ind1<-which(outputPsinteractionme$ID1=="PhotosyntheticBacteria"&outputPsinteractionme$ID2=="PhotosyntheticEukaryota")
+ind2<-which(outputPsinteractionme$ID1=="PhotosyntheticEukaryota"&outputPsinteractionme$ID2=="PhotosyntheticBacteria")
 
 
 temp<-colorgraphhi[which(colorgraphhi$group2=="PhotosyntheticBacteria"|colorgraphhi$group2=="PhotosyntheticEukaryota"),"otu"]
@@ -1236,16 +1264,38 @@ colorgraphhi[ind,]
 #lo
 
 Ciliophora - 4 taxa
-S7a97813269020725286a63989363ceef Litostomatea (class). when I blasted this, the closest identified hit was Foissnerides in the haptoria (subclass), Haptorida (an order of ciliate predators) but only 90% identity. The only other thing it could be in the litostomatea is from the group that consists of endosymbionts in th digestive tract of vertebrates which is it not probably, so otherwise it is a predator
-S13a0576d1656e575cdc2dc94fd138719 Litostomatea/Isotricha (genus) uncultured_rumen_protozoa
-  when I blasted this it came back as 100% idenity to Enchelyodon sp (haptorida). which is a freeliving ciliate predator (https://www.nies.go.jp/chiiki1/protoz/morpho/ciliopho/enchelyo.htm)
-Sec88fea6bf21bef8baba7173b475de7d Scuticociliatia, Scuticociliates often feed on bacteria (subclass). "Scuticociliates often feed on bacteria, using complex morphological adaptations to create currents
-and filters capable of capturing bacteria and other particles
-from the water column or scraping them from hard surfaces"
+
+knowns: 
+Sec88fea6bf21bef8baba7173b475de7d Scuticociliatia, Scuticociliates often feed on bacteria (subclass). "Scuticociliates often feed on bacteria, using complex morphological adaptations to create currents and filters capable of capturing bacteria and other particles from the water column or scraping them from hard surfaces"
 Se4ae90d4c05ef00793fc6b93fb6a9af7 Halteria (genus) is a filter feeder also called a grazer on bacteria and other things non selective wide range of smallish sizes (halteria is quite small)
 
-grep -C 2 "13a0576d1656e575cdc2dc94fd138719" dna-sequences.fasta
+unknowns:
+S7a97813269020725286a63989363ceef Litostomatea (class). when I blasted this, the closest identified hit was Foissnerides in the haptoria (subclass), Haptorida (an order of ciliate predators) but only 90% identity. The only other thing it could be in the litostomatea is from the group that consists of endosymbionts in th digestive tract of vertebrates which is it not probably, so otherwise it is a predator
+S9bd3df7f714986d788a2cce65be56d10 - contrheep, a huge group of ciliates, includes things that eat bacteria but also symbionts/parasites of fish etc. when I blasted it the best match 99.17% is that it is a Orchitophryidae which still includes bacteriophagus and histophagus (parasites of fish, etc.)
 
+no longer here
+S13a0576d1656e575cdc2dc94fd138719 Litostomatea/Isotricha (genus) uncultured_rumen_protozoa
+  when I blasted this it came back as 100% idenity to Enchelyodon sp (haptorida). which is a freeliving ciliate predator (https://www.nies.go.jp/chiiki1/protoz/morpho/ciliopho/enchelyo.htm)
+
+
+grep -C 2 "7a97813269020725286a63989363ceef" dna-sequences.fasta
+
+ind<-grep("Sec88fea6bf21bef8baba7173b475de7d",colorgraphlo$otu,perl=T,value=F)
+temp<-colorgraphlo[ind,]
+temp2<-myedgelistlo[which(myedgelistlo$X1%in%temp$otu|myedgelistlo$X2%in%temp$otu),]
+colnames(temp2)[2]<-"otu"
+temp4<-merge(temp2,colorgraphlo[,c(1,2,5)])
+20 relationships with bacteria (9 neg, 11)
+
+ind<-grep("Se4ae90d4c05ef00793fc6b93fb6a9af7",colorgraphlo$otu,perl=T,value=F)
+temp<-colorgraphlo[ind,]
+temp2<-myedgelistlo[which(myedgelistlo$X1%in%temp$otu|myedgelistlo$X2%in%temp$otu),]
+colnames(temp2)[2]<-"otu"
+temp4<-merge(temp2,colorgraphlo[,c(1,2,5)])
+21 relationships with bacteria (16 neg 5 pos)
+
+
+#old
 ind<-grep("Ciliophora",colorgraphlo$taxstring,perl=T,value=F)
 temp<-colorgraphlo[ind,]
 temp2<-myedgelistlo[which(myedgelistlo$X1%in%temp$otu|myedgelistlo$X2%in%temp$otu),]
