@@ -24,19 +24,18 @@ MovingUphill4_WorkspaceITSBactTrials.Rdata #dada2 trials in R when I was testing
 MovingUphill4_WorkspaceITSbioinformatics.Rdata
 MovingUphill4_WorkspaceDataCleaning.Rdata
 MovingUphill4_WorkspaceDataCleaningOutput.Rdata #just the 15 output files I need for downstream analysis, all intermediate files deleted from env
+MovingUphill4_WorkspaceAnalysisNetworkTrials.Rdata #all the different trials I ran when deciding the parameters for the networks
+MovingUphill4_WorkspaceSimulations.Rdata # simulations based on Faust 2015
 
 #These environments are where the new analyses start
 MovingUphill5_SubsettingPCArange.Rdata #subsetting low and hi at the same range of pca axis 1
-MovingUphill4_WorkspaceAnalysisNetworkTrials.Rdata #all the different trials I ran when deciding the parameters for the networks
-MovingUphill4_WorkspaceSubsetting.Rdata #subsetting hi plots 10 times 273 of the 306 species to make it similar to the number of taxa going in to the network analysis
-MovingUphill4_WorkspaceSimulations.Rdata # simulations based on Faust 2015
+MovingUphill5_WorkspaceSubsetting.Rdata #subsetting hi plots 10 times 273 of the 306 species to make it similar to the number of taxa going in to the network analysis
 MovingUphill5_WorkspaceRandomizations.Rdata #randomizing my data to detect false positives
 MovingUphill5_Krona.Rdata #code for krona plots
 MovingUphill5_WorkspaceTrials1.Rdata #for boral models
 MovingUphill5_WorkspaceTrials2.Rdata #for boral models
 
 save.image("~/Dropbox/EmilyComputerBackup/Documents/Niwot_King/FiguresStats/kingdata/MovingUphill5_WorkspaceTrials1.Rdata")  # 
-save.image("~/Dropbox/EmilyComputerBackup/Documents/Niwot_King/FiguresStats/kingdata/MovingUphill5_Krona.Rdata")  # 
 
 load("~/Dropbox/EmilyComputerBackup/Documents/Niwot_King/FiguresStats/kingdata/MovingUphill5_WorkspaceTrials1.Rdata") 
 
