@@ -1378,3 +1378,32 @@ rm(list=setdiff(ls(), c("labelfile",
                         "biogeo6",
                         "comm.bio")))
 
+#info sheet for Vendula Brabcová, first time
+infosheet<-read.csv("~/Desktop/Info_request_sheet.csv")#make column called Sample_name which is the plot number
+biogeo6$lomehi
+temp<-biogeo6%>%
+  select(Sample_name,X.SampleID,lomehi)
+test<-merge(temp,infosheet,"Sample_name",all.y=T)
+test2<-test%>%
+  mutate(succession=lomehi)
+test2$succession<-plyr::revalue(test2$succession,c("lo"="early","me"="mid","hi"="late"))
+test2
+write.csv(test2,"~/Desktop/test.csv",row.names = F)
+
+#info sheet for Vendula Brabcová, second time with chemistry
+infosheet<-read.csv("~/Desktop/Info_request_sheet_chemistry.csv")#change the incorrect target gene for S.141.ITS from 18S to ITS (not sure how i made that mistake, must have been a hand copying error in excel b/c that plot was originally at the very bottom with the 18S plots)
+colnames(infosheet)[5]<-"Sample_name"
+head(infosheet)
+
+biogeo<-read.csv("/Users/farrer/Dropbox/EmilyComputerBackup/Documents/Niwot_King/FiguresStats/kingdata/Biogeochemistry/CN_enzymes_pH_moisture_whc_Niwot2015t.csv")
+dim(biogeo)
+biogeotemp<-biogeo%>%
+  separate(X.SampleID,into=c(NA,'Sample_name',NA),sep="\\.", remove=F)%>%
+  select(X.SampleID,Sample_name,pH,TN,TC)
+
+test<-merge(biogeotemp,infosheet,"Sample_name",all.y=T)
+test2<-test%>%
+  arrange(target.gene,Library.Name,Sample_name)%>%
+  select(-pH.y,-total.C,-total.N)
+
+write.csv(test2,"~/Desktop/test2.csv",row.names = F)
